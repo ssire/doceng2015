@@ -1,0 +1,718 @@
+<SlideShow>
+  <Slides>
+    <Slide>
+      <Title>Install and Configure eXist-DB</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="none">
+          <Item>
+            <Illustration Source="images/exist-db.gif">
+              <Meta>
+                <Width>20</Width>
+                <Alignment>center</Alignment>
+              </Meta>
+            </Illustration>
+          </Item>
+        </Block>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Initiated by Wolfgang Meier</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Since 2001</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">Recently moved to </Fragment>
+              <Link>
+                <LinkText>GitHub</LinkText>
+                <LinkRef>https://github.com/eXist-db</LinkRef>
+              </Link>
+              <Fragment> (from  </Fragment>
+              <Fragment FragmentKind="emphasize">source forge</Fragment>
+              <Fragment> with SVN)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Thousands of Java loc (650000 ?)</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">Cross platforms</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Grown out of many open source libraries</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">XML parser, network protocols, indexation,  etc.</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Where to get help ?</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>mailing list </Fragment>
+                <Link>
+                  <LinkText>eXist open</LinkText>
+                  <LinkRef>http://exist-open.markmail.org/search/?q=</LinkRef>
+                </Link>
+              </Item>
+              <Item>
+                <Link>
+                  <LinkText>stackoverflow</LinkText>
+                  <LinkRef>http://stackoverflow.com/tags/exist-db/info</LinkRef>
+                </Link>
+              </Item>
+            </SubList>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Default Locations</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment FragmentKind="verbatim">EXIST_HOME</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Contains </Fragment>
+              <Fragment FragmentKind="important">code and librairies</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="verbatim">EXIST_HOME/webapp/WEB-INF/data</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Contains </Fragment>
+              <Fragment FragmentKind="important">data files</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="verbatim">EXIST_HOME/webapp/WEB-INF/data</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Contains </Fragment>
+              <Fragment FragmentKind="important">journal files</Fragment>
+              <Fragment> (</Fragment>
+              <Fragment FragmentKind="emphasize">enabled by default</Fragment>
+              <Fragment>)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="verbatim">EXIST_HOME/webapp/WEB-INF/logs</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Contains </Fragment>
+              <Fragment FragmentKind="important">log files</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Pre-install decisions</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Choose </Fragment>
+              <Fragment FragmentKind="verbatim">EXIST_HOME</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Choose data files location (usually same as journal files location)</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Par défaut dans </Fragment>
+              <Fragment FragmentKind="verbatim">EXIST_HOME/webapp/WEB-INF/data</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment FragmentKind="verbatim">dom.dbx, elements.dbx, collections.dbx, *.dbx</Fragment>
+              </Item>
+              <Item>
+                <Fragment>sub-directory </Fragment>
+                <Fragment FragmentKind="verbatim">fs</Fragment>
+              </Item>
+              <Item>
+                <Fragment>journal files </Fragment>
+                <Fragment FragmentKind="verbatim">*.log</Fragment>
+              </Item>
+              <Item>
+                <Fragment>+ lock files </Fragment>
+                <Fragment FragmentKind="verbatim">*.lck</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Choose password for </Fragment>
+              <Fragment FragmentKind="verbatim">admin</Fragment>
+              <Fragment> account</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Choose JVM memory and cache memory</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">when using graphical installer</Fragment>
+            </Para>
+            <Para>
+              <Fragment>This can be changed later in startup script and in </Fragment>
+              <Fragment FragmentKind="verbatim">EXIST_HOME/conf.xml</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Proposed Conventions</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>install </Fragment>
+              <Fragment FragmentKind="verbatim">EXIST_HOME</Fragment>
+              <Fragment> into </Fragment>
+              <Fragment FragmentKind="verbatim">/usr/local/{application}/lib</Fragment>
+            </Para>
+            <Para>
+              <Fragment>where </Fragment>
+              <Fragment FragmentKind="emphasize">application</Fragment>
+              <Fragment> is the name of your application</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>this way you can easily locate your applications if you develop several ones</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="verbatim">/usr/local/{app1}</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="verbatim">/usr/local/{app2}</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>edit </Fragment>
+              <Fragment FragmentKind="verbatim">EXIST_HOME/conf.xml</Fragment>
+              <Fragment> (post-intallation) to configure</Fragment>
+            </Para>
+            <Para>
+              <Fragment>data files into </Fragment>
+              <Fragment FragmentKind="verbatim">/usr/local/{application}/data</Fragment>
+            </Para>
+            <Para>
+              <Fragment>log files into </Fragment>
+              <Fragment FragmentKind="verbatim">/usr/local/{application}/logs</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Installation</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Download install program either from </Fragment>
+              <Link>
+                <LinkText>http://exist-db.org/exist/apps/homepage/index.html</LinkText>
+                <LinkRef>http://exist-db.org/exist/apps/homepage/index.html</LinkRef>
+              </Link>
+            </Para>
+            <Para>
+              <Fragment>or from </Fragment>
+              <Link>
+                <LinkText>http://sourceforge.net/projects/exist/files/Stable/</LinkText>
+                <LinkRef>http://sourceforge.net/projects/exist/files/Stable/</LinkRef>
+              </Link>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>eXist-db-setup-2.2.jar</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>To install from the JAR file</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>double-click it or enter </Fragment>
+                <Fragment FragmentKind="verbatim">java -jar eXist-{version}.jar</Fragment>
+                <Fragment> to start graphical installer</Fragment>
+              </Item>
+              <Item>
+                <Fragment>command line for </Fragment>
+                <Fragment FragmentKind="important">headless installation</Fragment>
+                <Fragment> : </Fragment>
+                <Fragment FragmentKind="verbatim">java -jar eXist-{version}.jar -console</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>You need to edit </Fragment>
+              <Fragment FragmentKind="verbatim">EXIST_HOME/log4j.xml</Fragment>
+              <Fragment> post-installation to change log files directory</Fragment>
+            </Para>
+            <Code>
+              <Source>sudo vim /usr/local/exist/lib/log4j.xml
+vim --&gt; :%s/${exist.home}\/webapp\/WEB-INF\/logs/\/usr\/local\/###application###\/logs/g
+        (10 substitutions on 10 lines)</Source>
+              <Meta>
+                <Size>15px</Size>
+              </Meta>
+            </Code>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>File System Hierarchy</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment FragmentKind="verbatim">/</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="verbatim">/bin</Fragment>
+              <Fragment> (command line utilities to start / stop / administrate / backup / restore)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="verbatim">/extensions</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="verbatim">/lib</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="verbatim">/tools</Fragment>
+              <Fragment> (</Fragment>
+              <Fragment FragmentKind="verbatim">jetty</Fragment>
+              <Fragment>, </Fragment>
+              <Fragment FragmentKind="verbatim">ant</Fragment>
+              <Fragment>, </Fragment>
+              <Fragment FragmentKind="verbatim">wrapper</Fragment>
+              <Fragment>)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="verbatim">/webapp</Fragment>
+              <Fragment> (</Fragment>
+              <Fragment FragmentKind="important">WEB-INF/data</Fragment>
+              <Fragment>, </Fragment>
+              <Fragment FragmentKind="verbatim">WEB-INF/logs</Fragment>
+              <Fragment>)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="verbatim">/autodeploy</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Important Files</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>jar archives (ex: </Fragment>
+              <Fragment FragmentKind="verbatim">start.jar</Fragment>
+              <Fragment>, </Fragment>
+              <Fragment FragmentKind="verbatim">exist.jar</Fragment>
+              <Fragment>)</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Can be launched with </Fragment>
+              <Fragment FragmentKind="emphasize">java -jar archive.jar main options</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Shell scripts [</Fragment>
+              <Fragment FragmentKind="verbatim">.bat</Fragment>
+              <Fragment> ou </Fragment>
+              <Fragment FragmentKind="verbatim">.sh</Fragment>
+              <Fragment>] : more convenient way to launch the jar archives</Fragment>
+            </Para>
+            <Para>
+              <Fragment>See online documentation </Fragment>
+              <Link>
+                <LinkText>About the Scripts in the bin Directory</LinkText>
+                <LinkRef>http://localhost:8080/exist/apps/doc/advanced-installation.xml#bin-executables</LinkRef>
+              </Link>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Files </Fragment>
+              <Fragment FragmentKind="verbatim">*.properties</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>preferences for the build system (ant with </Fragment>
+                <Fragment FragmentKind="verbatim">build.properties</Fragment>
+                <Fragment>)</Fragment>
+              </Item>
+              <Item>
+                <Fragment>preferences for some command line tools</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Very important XML configuration files</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment FragmentKind="verbatim">conf.xml</Fragment>
+              </Item>
+              <Item>
+                <Fragment FragmentKind="verbatim">web.xml</Fragment>
+              </Item>
+              <Item>
+                <Fragment FragmentKind="verbatim">log4j.xml</Fragment>
+              </Item>
+              <Item>
+                <Fragment FragmentKind="verbatim">controller-config.xml</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>3 execution models</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>As an </Fragment>
+              <Fragment FragmentKind="important">embedded library</Fragment>
+              <Fragment> into a Java application</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>As a </Fragment>
+              <Fragment FragmentKind="important">standalone application</Fragment>
+              <Fragment> running its own web server</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">Embeds a lightweigth Jetty</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>As a </Fragment>
+              <Fragment FragmentKind="important">web application</Fragment>
+              <Fragment> into a web servet container</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">Servlet Architecture</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="important">Default</Fragment>
+              <Fragment> : registers itself as a unique application in a Jetty included in the distribution</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>At least 5 ways to start...</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>With </Fragment>
+              <Fragment FragmentKind="verbatim">bin/server.sh[.bat]</Fragment>
+            </Para>
+            <Para>
+              <Fragment>To launch </Fragment>
+              <Fragment FragmentKind="emphasize">standalone</Fragment>
+              <Fragment> version</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Double-click </Fragment>
+              <Fragment FragmentKind="verbatim">start.jar</Fragment>
+              <Fragment> or</Fragment>
+            </Para>
+            <Code>
+              <Source>java -jar start.jar</Source>
+              <Meta>
+              </Meta>
+            </Code>
+            <Para>
+              <Fragment>Graphical launcher using properties in </Fragment>
+              <Fragment FragmentKind="verbatim">vm.properties</Fragment>
+              <Fragment> for web application version</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>With </Fragment>
+              <Fragment FragmentKind="verbatim">bin/startup.sh[.bat]</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Command line way to launch web aplication version</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="important">Add ''&amp;'' to start in background and leave terminal open while developing</Fragment>
+            </Para>
+            <Code>
+              <Source>./bin/startup.sh &amp;</Source>
+              <Meta>
+              </Meta>
+            </Code>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>With </Fragment>
+              <Fragment FragmentKind="verbatim">tools/wrapper/bin/exist.sh[.bat]</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Launch web application version as a service</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Useful for production servers ( </Fragment>
+              <Fragment FragmentKind="emphasize">Linux Daemon</Fragment>
+              <Fragment>  or Windows Service)</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">Requires extra configuration effort to install wrapper</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>With a WAR deployed in a web container</Fragment>
+            </Para>
+            <Para>
+              <Fragment>There is an </Fragment>
+              <Fragment FragmentKind="emphasize">ant</Fragment>
+              <Fragment> target to build the WAR from the distribution</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>How to check if its running ?</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Command line with </Fragment>
+              <Fragment FragmentKind="verbatim">ps</Fragment>
+            </Para>
+            <Code>
+              <Source>ps -ef | grep jetty</Source>
+              <Meta>
+              </Meta>
+            </Code>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Open </Fragment>
+              <Fragment FragmentKind="verbatim">EXIST_HOME/webapp/WEB-INF/logs/exist.log</Fragment>
+              <Fragment> in log files (or </Fragment>
+              <Fragment FragmentKind="verbatim">xmldb.log</Fragment>
+              <Fragment>)</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">(default location)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Invoke JMX (JavaManagementExtensions) agent which is available through a web service</Fragment>
+            </Para>
+            <Para>
+              <Link>
+                <LinkText>http://localhost:8080/exist/status</LinkText>
+                <LinkRef>http://localhost:8080/exist/status</LinkRef>
+              </Link>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">If you haven't removed its servlet from web.xml configuration file</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Launch Failures</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Port already in use</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Port configured inside </Fragment>
+              <Fragment FragmentKind="verbatim">tools/jetty/etc/jetty.xml</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Another database instance running</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Launch blocked by lock files</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Incomplete last stop that left lock files into position</Fragment>
+            </Para>
+            <Code>
+              <Source>$ ls data/*.lck
+data/dbx_dir.lck	data/journal.lck
+</Source>
+              <Meta>
+              </Meta>
+            </Code>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Stopping Server</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Command line</Fragment>
+            </Para>
+            <Code>
+              <Source>./bin/shutdown -P {password}</Source>
+              <Meta>
+              </Meta>
+            </Code>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>From Dashboard</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>If launched as a service</Fragment>
+            </Para>
+            <Code>
+              <Source>sudo service exist stop</Source>
+              <Meta>
+              </Meta>
+            </Code>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Missing feature : no </Fragment>
+              <Fragment FragmentKind="emphasize">Hot Restart</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Executing an XQuery Script</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>With classical REST interface from within database</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>With XQueryServlet from the file system</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Using URL Rewriting from a controller.xql file</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>You can try with this very simple XQuery program (save to </Fragment>
+              <Fragment FragmentKind="verbatim">hello.xql</Fragment>
+              <Fragment>)</Fragment>
+            </Para>
+            <Code>
+              <Source>xquery version "1.0";
+(: ======================================================================
+   Hello World Example
+   ======================================================================
+:)
+
+declare option exist:serialize "method=text media-type=text/plain";
+
+"Hello World !"</Source>
+              <Meta>
+                <Language>xquery</Language>
+              </Meta>
+            </Code>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+  </Slides>
+</SlideShow>

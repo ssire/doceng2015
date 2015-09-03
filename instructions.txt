@@ -1,0 +1,6 @@
+Pour démarrer un nouveau cours copier le contenu de ce répertoire dans le répertoire "src" du cours, mettre ensuite à jour les fichiers :
+
+- cours.xsl (ajuster le titre et le copyright)
+- install.sh (ajuster le répertoire cible)
+- make.sh (ajuster la liste des fichiers à transformer)
+

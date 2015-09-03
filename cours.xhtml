@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:xt="http://ns.inria.org/xtiger" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="copyright" content="Copyright &#169; 2013 S. Sire - Oppidoc " />
+
+  <title>Modèle d'éditeur de support de cours</title>
+  <script type="text/javascript" charset="utf-8" src="resources/jquery/js/jquery-1.7.1.min.js">//</script>
+<script type="text/javascript" charset="utf-8">
+  (function () {
+    function setupMetaItemMenu (top) {
+      $('.menu-toggle', top).click(
+        function() {
+          $(this).closest('.with-menu').toggleClass('opened');
+        });
+      $('span.ui-close', top).click(
+        function() {
+          $(this).closest('.with-menu').toggleClass('opened');
+        });
+    }
+    function setupMetaRegionMenu (top) {
+      $('.toggle', top).click(
+        function() {
+          $(this).closest('.region').toggleClass('opened');
+        });
+      $('.drawer span.ui-close', top).click(
+        function() {
+          $(this).closest('.region').toggleClass('opened');
+        });
+    }
+    // Post slice addition or insertion callback
+    function setupNewSlice (event, repeater) {
+      var div;
+      var klass = $(event.target).attr('class');
+      window.console.log('Repeating ' + klass );
+      if (klass) {
+        // div = repeater.getFirstNodeForSlice(event.position).nextSibling.nextSibling;
+        div = $(repeater.getFirstNodeForSlice(event.position)).nextAll('*').get(0);
+        // window.console.log('installing inside ' + div.nodeName + ' class ' + div.className);
+        if (klass.indexOf('slide') != -1) {
+          setupMetaRegionMenu(div);
+          setupMetaItemMenu(div);
+        } if ((klass.indexOf('region') != -1) || (klass.indexOf('list') != -1) || (klass.indexOf('item') != -1)) {
+          setupMetaItemMenu(div);
+        }
+      }
+    }
+    // Post content loading callback
+    function setupSlices () {
+      var tmp;
+      $('#slides .toggle').click(
+        function() {
+          $(this).closest('.region').toggleClass('opened');
+        });
+      $('#slides span.ui-close').click(
+        function() {
+          $(this).closest('.region').toggleClass('opened');
+        });
+      $('#slides .menu-toggle').click(
+        function() {
+          $(this).closest('.with-menu').toggleClass('opened');
+        });
+    }
+    function init() {
+      // first installation
+      // trick: can't use own jQuery because AXEL is using jQuery's library sitting next to it in parent's iframe
+      parent.jQuery('#slides', document).bind('axel-add', setupNewSlice);
+      parent.jQuery($('#container', parent.document)).bind('axel-content-ready', setupSlices);
+      // FIXME: system to automatically adjust images size (in %)
+      parent.jQuery('#slides', document).bind('axel-update', function (event, editor) {
+        var txt = parent.$axel($(event.target).closest('.illustration').get(0)).xml(),
+            i = txt.indexOf('Width>');
+        // FIXME: improve code when $axel().peek('Width') will function
+        if (i != -1) {
+          txt = txt.substr(i + 6);
+          i = txt.indexOf('/Width');
+          txt = txt.substr(0,i-1);
+          // window.console.log('width: ' + txt);
+          $('img',event.target).attr('width', txt + '%');
+          // FIXME: here we should call set function of the style filter so that unset works
+        }
+      });
+    }
+    jQuery(init);
+  }());
+</script>
+  <style type="text/css">
+body {
+  margin-left: 150px;
+  font-family: "Gill Sans MT","Gill Sans",GillSans,sans-serif;
+  font-size: 20px;
+}
+
+/*** Basic styles ***/
+pre {
+  margin: 0;
+  padding: 0.5em 1em;
+}
+h2 {
+  margin: 0.25em 0;
+}
+p {
+  margin: 0.25em 0;
+}
+p.legend {
+  color: #333;
+  font-style: italic;
+}
+/* Region drawer, Illustration and Code menu */
+div.popup {
+  position: relative;
+  margin: 0 20px;
+  padding: 5px 20px;
+  color:#333;
+  background: #c4eaf8;
+  border:solid 1px #c4aaff;
+  -moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px;
+  -moz-box-shadow:0 0 5px #999; -webkit-box-shadow:0 0 5px #999; box-shadow:0 0 5px #999;
+}
+span.ui-close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  color: #12279b;
+}
+
+/*** Preview ***/
+body.preview .nopreview {
+  display: none !important;
+}
+body.preview .axel-core-editable, body.preview div.region {
+  border: none !important;
+}
+body.preview div.block {
+  background: white !important;
+}
+
+/*** Region ***/
+div.region:hover, div.region.opened {
+  border: dotted 2px gray;
+}
+div.region {
+  position: relative;
+  margin-bottom: 20px;
+}
+div.region div.drawer {
+  display: none;
+}
+div.region.opened div.drawer {
+  display: block;
+}
+span.toggle {
+  color: #12279b;
+  font-size: 18px;
+}
+
+/*** Block ***/
+div.block:hover {
+  background: #e5f0ef;
+}
+div.block {
+  position: relative;
+  /*border: solid 1px #AAA;*/
+  margin-bottom: 1em;
+}
+div.block > div.repeat {
+  display: none;
+  position: absolute;
+  top: -20px;
+  right: 0;
+  background: #e5f0ef;
+}
+div.block:hover > div.repeat {
+  display: block;
+}
+
+/*** Items inside a Block ***/
+ul.list {
+  margin: 5px;
+  padding: 0 15px;
+}
+li.sublist {
+  list-style-type: circle !important;
+}
+div.block:hover {
+  z-index: 100;
+}
+div.item:hover div.ui.item, div.row:hover div.ui.row {
+  display: block;
+  z-index: 100;
+}
+div.drawer p {
+  margin: 0;
+}
+div.item {
+  position: relative;
+  margin-bottom: 0.75em;
+}
+div.item > div.repeat {
+  position: absolute;
+  top: 0;
+  left: -150px;
+  width: 150px;
+  height: 100%;
+}
+div.row {
+  position:relative;
+}
+div.row > div.repeat {
+  position: absolute;
+  top: 0;
+  left: -100px;
+  width: 100px;
+  height: 100%;
+}
+div.ui {
+  display: none;
+}
+
+/*** Item numbering ***/
+div.block.none > ul {
+  margin-left: 0;
+  padding-left: 0;
+}
+div.block.bullet li {
+  list-style-type: square;
+}
+div.block.decimal li {
+  list-style-type: decimal;
+}
+div.block.roman li {
+  list-style-type: upper-roman;
+}
+div.block.latin li {
+  list-style-type: upper-latin;
+}
+div.block.none li {
+  list-style-type: none;
+}
+
+/* Some Items (Illustration, Code) have an extra menu (Meta) */ 
+div.illustration.opened div.menu, div.code.opened div.menu {
+  display: block;
+}
+div.menu {
+  display:none;
+  margin: 0;
+  text-align: left;
+}
+div.mask { 
+  position: relative
+}
+div.mask:hover  span.menu-toggle { 
+  display: inline;
+}
+span.menu-toggle {
+  display: none;
+  background: #e5f0ff;
+/*  position: absolute;
+  bottom: -20px;
+  right: 0;*/
+}
+  </style>
+
+  <xt:head version="1.1" templateVersion="1.0" label="SlideShow">
+
+    <!-- minOccurs=0 because axel-editor-ready not working in parent frame  -->
+    <xt:component name="t_slide">
+      <div class="slide">
+        <h1><xt:use types="text" label="Title">Titre du transparent</xt:use><xt:menu-marker/></h1>
+        <xt:repeat minOccurs="0" maxOccurs="*" pseudoLabel="Region">
+          <xt:use types="t_region" label="Region"/>
+        </xt:repeat>
+      </div>
+    </xt:component>
+    
+    <xt:component name="t_region">
+      <div class="region">
+        <div class="region-menu nopreview"><xt:menu-marker size="24"/> <span class="toggle">&#9660;</span></div>
+        <xt:use types="t_drawer" label="Meta"/>
+        <xt:repeat minOccurs="1" maxOccurs="*" pseudoLabel="Block">
+            <xt:use types="t_block" label="Block"/>
+        </xt:repeat>
+      </div>
+    </xt:component>
+
+    <xt:component name="t_block">
+      <div class="block bullet">
+        <div class="repeat nopreview"><xt:attribute types="select" name="Numbering" param="filter=style;style_property=class;style_root_class=block" values="none bullet decimal roman latin" i18n="vide puce chiffre romain lettre" default="puce"/><xt:menu-marker/></div>
+        <ul class="list">
+          <xt:repeat minOccurs="1" maxOccurs="*" pseudoLabel="Item">
+            <li>
+              <xt:use types="t_item" label="Item"/>
+            </li>
+          </xt:repeat>
+        </ul>
+      </div>
+    </xt:component>
+
+    <xt:component name="t_drawer">
+      <div class="drawer popup">
+        <span class="ui-close">&#10008;</span>
+        <p>Float : <xt:use types="select" label="Float" option="unset" param="filter=style;style_property=float;style_root_class=region" values="left right">left</xt:use></p>
+        <p>Width : <xt:use types="text" label="Width" option="unset" param="filter=style;style_unit=%;style_property=width;style_root_class=region">49</xt:use>%</p>
+        <p>Clear : <xt:use types="select" label="Clear" option="unset" param="filter=style;style_property=clear;style_root_class=region" values="both left right">left</xt:use></p>
+        <p>Espacement gauche : <xt:use types="text" label="LeftSpacing" option="unset" param="filter=style;style_property=padding-left;style_root_class=region">1%</xt:use>
+        </p>
+        <p>Espacement supérieure : <xt:use types="text" label="TopSpacing" option="unset" param="filter=style;style_property=padding-top;style_root_class=region">20px</xt:use>
+        </p>
+        <p><xt:use types="text" label="Link" option="unset">Lien hypertexte</xt:use></p>
+      </div>
+    </xt:component>
+
+    <xt:component name="t_item">
+      <div class="item">
+        <div class="repeat"><div class="ui item"><xt:menu-marker/></div></div>
+        <xt:repeat minOccurs="1" maxOccurs="*" pseudoLabel="Para Title Code SubList Illustration">
+          <xt:use types="t_row"/>
+        </xt:repeat>
+      </div>
+    </xt:component>
+
+    <xt:component name="t_row">
+      <div class="row">
+        <div class="repeat">
+          <div class="ui row">
+            <xt:menu-marker target="itemContentSelector"/><br/>
+            <xt:menu-marker/>
+          </div>
+        </div>
+        <xt:use types="t_para t_title t_code t_sublist t_illustration" label="Para Title Code SubList Illustration" param="name=itemContentSelector"/>
+      </div>
+    </xt:component>
+
+    <xt:component name="t_para" i18n="Para">
+      <p><xt:use types="text" param="filter=wiki;type=textarea;shape=parent">paragraph</xt:use></p>
+    </xt:component>
+
+    <xt:component name="t_title" i18n="Titre">
+      <h2><xt:use types="text">titre</xt:use></h2>
+    </xt:component>
+
+    <xt:component name="t_sublist" i18n="Liste">
+      <ul class="sublist">
+        <xt:repeat minOccurs="1" maxOccurs="*" pseudoLabel="Item">
+          <li class="sublist"><xt:use types="text" label="Item" param="filter=wiki;shape=parent-80px">élément de liste</xt:use><xt:menu-marker/></li>
+        </xt:repeat>
+      </ul>
+    </xt:component>
+
+    <xt:component name="t_illustration" i18n="Image">
+      <div class="illustration with-menu">
+        <div class="mask">
+          <xt:use types="text" param="filter=image event;class=image">addresse de l'image</xt:use>
+          <p class="legend"><span class="menu-toggle">&#9660;</span> <xt:use types="text" label="Legend" param="filter=wiki;type=textarea;shape=parent-80px" option="unset">légende</xt:use></p>          
+        </div>
+        <xt:use types="t_illustration_drawer" label="Meta"/>        
+      </div>
+    </xt:component>
+
+    <xt:component name="t_illustration_drawer">
+      <div class="menu popup">
+        <span class="ui-close">&#10008;</span> 
+        <p>Largeur :
+          <xt:use types="text" label="Width" option="set" param="class=x-Width;filter=style;style_unit=%;style_property=width;style_root_class=illustration;style_target_selector=span.image img">100</xt:use>%
+        </p>
+        <p>Alignement :
+          <xt:use types="select" label="Alignment" option="unset" param="filter=style;style_property=text-align;style_root_class=illustration" values="left center right" i18n="gauche centre droite">center</xt:use>
+        </p>
+        <p>
+          <xt:use types="text" label="Link" option="unset">Lien hypertexte</xt:use>
+        </p>
+      </div>
+    </xt:component>
+
+    <xt:component name="t_code" i18n="Code">
+      <div class="code with-menu">
+        <div class="mask">
+          <xt:use handle="pre" label="Source" types="text" param="enablelinebreak=true;type=textarea;shape=parent;filter=entities">code</xt:use>
+          <span class="menu-toggle">&#9660;</span> 
+        </div>
+        <xt:use types="t_code_drawer" label="Meta"/>
+      </div>
+    </xt:component>
+
+    <xt:component name="t_code_drawer">
+      <div class="menu popup">
+        <span class="ui-close">&#10008;</span> 
+        <p>Language :
+          <xt:use label="Language" types="text" option="unset">xml</xt:use><br/>
+        </p>
+        <p>
+          Taille police :
+          <xt:use types="text" label="Size" option="unset" param="filter=style;style_property=font-size;style_root_class=row;style_target_selector=pre">12px</xt:use>
+        </p>
+        <p>
+          <xt:use label="Link" types="text" option="unset">Lien hypertexte</xt:use>
+        </p>
+      </div>
+    </xt:component>
+
+  </xt:head>
+</head>
+
+<body class="">
+  <div id="slides">
+    <xt:repeat minOccurs="1" maxOccurs="*" label="Slides">
+      <xt:use types="t_slide" label="Slide"/>
+    </xt:repeat>
+  </div>
+</body>
+</html>

@@ -1,0 +1,546 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
+      xml:lang="fr">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+      <meta name="copyright"
+            content="Tutorial Web application development with XML © S. Sire - Oppidoc pour DocEng 2015 (generated 02/09/2015)"/>
+      <title>Tutorial Web application development with XML</title>
+      <link rel="stylesheet"
+            type="text/css"
+            media="screen, projection, print"
+            href="resources/Slidy2/styles/slidy.css"/>
+      <link rel="stylesheet"
+            type="text/css"
+            media="screen, projection, print"
+            href="resources/Slidy2/styles/w3c-blue.css"/>
+      <link rel="stylesheet"
+            type="text/css"
+            media="screen, projection, print"
+            href="resources/cours.css"/>
+      <script src="resources/Slidy2/scripts/slidy.js"
+              charset="utf-8"
+              type="text/javascript">//</script>
+      <script src="resources/jquery/js/jquery-1.7.1.min.js">//</script>
+      <script src="resources/ace-builds-master/src-noconflict/ace.js"
+              type="text/javascript"
+              charset="utf-8">//</script>
+      <script>
+          (function () {
+            function doScaleText ( e, incr ) {
+              var mask = $(e.target).closest('.mask'),
+                  pre = mask.find('pre'),
+                  size, m, nsize;
+              if (pre.length === 0) {
+                pre = mask.find('div.pre');
+              }
+              size = pre.css('font-size') || '20';
+              m = size.match(/(\d+)/);
+              nsize = (m) ? parseInt(m) : 20;
+              pre.css('font-size', (nsize + incr) + 'px');
+            };
+            function doColorize ( e ) {
+              var root = $(e.target).closest('.mask'),
+                  pre = root.find('pre'),
+                  lines = pre.contents(),
+                  size = pre.css('font-size') || '20px',
+                  t = root.append('&lt;div class="pre"/&gt;').find('div.pre').get(0),
+                  language = pre.attr('data-language');
+              lines.each(function(i,e){t.appendChild(e)});
+              pre.remove();
+              $(t).css('font-size', size);
+              editor = ace.edit(t);
+              editor.setOptions({
+                    readOnly: true,
+                    highlightActiveLine: false,
+                    highlightGutterLine: false,
+                    maxLines: Infinity
+              });
+              editor.setTheme("ace/theme/textmate");
+              editor.getSession().setMode("ace/mode/" + language);
+              // $(e.target).css('z-index', 0);
+              $(e.target).hide();
+            };
+            function init() {
+              $('div.commands &gt; button[data-command="ace"]').click( doColorize );
+              $('div.commands &gt; button[data-command="text-in"]').click( function (e) { doScaleText(e,2) } );
+              $('div.commands button[data-command="text-out"]').click( function (e) { doScaleText(e,-2) } );
+            };
+            jQuery(init);
+          }());
+      </script>
+   </head>
+   <body>
+      <div class="background"/>
+      <div class="slide">
+         <h1>Install and Configure eXist-DB</h1>
+         <div class="region">
+            <ul class="block none">
+               <li>
+                  <div class="illustration" style="text-align:center">
+                     <img src="images/exist-db.gif" style="width:20%"/>
+                  </div>
+               </li>
+            </ul>
+            <ul class="block bullet">
+               <li>
+                  <p>Initiated by Wolfgang Meier</p>
+               </li>
+               <li>
+                  <p>Since 2001</p>
+                  <p>
+                     <em>Recently moved to </em>
+                     <a href="https://github.com/eXist-db" target="_blank">GitHub</a> (from  <em>source forge</em> with SVN)</p>
+               </li>
+               <li>
+                  <p>Thousands of Java loc (650000 ?)</p>
+                  <p>
+                     <em>Cross platforms</em>
+                  </p>
+               </li>
+               <li>
+                  <p>Grown out of many open source libraries</p>
+                  <p>
+                     <em>XML parser, network protocols, indexation,  etc.</em>
+                  </p>
+               </li>
+               <li>
+                  <p>Where to get help ?</p>
+                  <ul class="sublist">
+                     <li>mailing list <a href="http://exist-open.markmail.org/search/?q=" target="_blank">eXist open</a>
+                     </li>
+                     <li>
+                        <a href="http://stackoverflow.com/tags/exist-db/info" target="_blank">stackoverflow</a>
+                     </li>
+                  </ul>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Default Locations</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>
+                     <tt>EXIST_HOME</tt>
+                  </p>
+                  <p>Contains <strong>code and librairies</strong>
+                  </p>
+               </li>
+               <li>
+                  <p>
+                     <tt>EXIST_HOME/webapp/WEB-INF/data</tt>
+                  </p>
+                  <p>Contains <strong>data files</strong>
+                  </p>
+               </li>
+               <li>
+                  <p>
+                     <tt>EXIST_HOME/webapp/WEB-INF/data</tt>
+                  </p>
+                  <p>Contains <strong>journal files</strong> (<em>enabled by default</em>)</p>
+               </li>
+               <li>
+                  <p>
+                     <tt>EXIST_HOME/webapp/WEB-INF/logs</tt>
+                  </p>
+                  <p>Contains <strong>log files</strong>
+                  </p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Pre-install decisions</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Choose <tt>EXIST_HOME</tt>
+                  </p>
+               </li>
+               <li>
+                  <p>Choose data files location (usually same as journal files location)</p>
+                  <p>Par défaut dans <tt>EXIST_HOME/webapp/WEB-INF/data</tt>
+                  </p>
+                  <ul class="sublist">
+                     <li>
+                        <tt>dom.dbx, elements.dbx, collections.dbx, *.dbx</tt>
+                     </li>
+                     <li>sub-directory <tt>fs</tt>
+                     </li>
+                     <li>journal files <tt>*.log</tt>
+                     </li>
+                     <li>+ lock files <tt>*.lck</tt>
+                     </li>
+                  </ul>
+               </li>
+               <li>
+                  <p>Choose password for <tt>admin</tt> account</p>
+               </li>
+               <li>
+                  <p>Choose JVM memory and cache memory</p>
+                  <p>
+                     <em>when using graphical installer</em>
+                  </p>
+                  <p>This can be changed later in startup script and in <tt>EXIST_HOME/conf.xml</tt>
+                  </p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Proposed Conventions</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>install <tt>EXIST_HOME</tt> into <tt>/usr/local/{application}/lib</tt>
+                  </p>
+                  <p>where <em>application</em> is the name of your application</p>
+               </li>
+               <li>
+                  <p>this way you can easily locate your applications if you develop several ones</p>
+                  <p>
+                     <tt>/usr/local/{app1}</tt>
+                  </p>
+                  <p>
+                     <tt>/usr/local/{app2}</tt>
+                  </p>
+               </li>
+               <li>
+                  <p>edit <tt>EXIST_HOME/conf.xml</tt> (post-intallation) to configure</p>
+                  <p>data files into <tt>/usr/local/{application}/data</tt>
+                  </p>
+                  <p>log files into <tt>/usr/local/{application}/logs</tt>
+                  </p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Installation</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Download install program either from <a href="http://exist-db.org/exist/apps/homepage/index.html"
+                        target="_blank">http://exist-db.org/exist/apps/homepage/index.html</a>
+                  </p>
+                  <p>or from <a href="http://sourceforge.net/projects/exist/files/Stable/"
+                        target="_blank">http://sourceforge.net/projects/exist/files/Stable/</a>
+                  </p>
+                  <ul class="sublist">
+                     <li>eXist-db-setup-2.2.jar</li>
+                  </ul>
+               </li>
+               <li>
+                  <p>To install from the JAR file</p>
+                  <ul class="sublist">
+                     <li>double-click it or enter <tt>java -jar eXist-{version}.jar</tt> to start graphical installer</li>
+                     <li>command line for <strong>headless installation</strong> : <tt>java -jar eXist-{version}.jar -console</tt>
+                     </li>
+                  </ul>
+               </li>
+               <li>
+                  <p>You need to edit <tt>EXIST_HOME/log4j.xml</tt> post-installation to change log files directory</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre style="font-size:15px">sudo vim /usr/local/exist/lib/log4j.xml
+vim --&gt; :%s/${exist.home}\/webapp\/WEB-INF\/logs/\/usr\/local\/###application###\/logs/g
+        (10 substitutions on 10 lines)</pre>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>File System Hierarchy</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>
+                     <tt>/</tt>
+                  </p>
+               </li>
+               <li>
+                  <p>
+                     <tt>/bin</tt> (command line utilities to start / stop / administrate / backup / restore)</p>
+               </li>
+               <li>
+                  <p>
+                     <tt>/extensions</tt>
+                  </p>
+               </li>
+               <li>
+                  <p>
+                     <tt>/lib</tt>
+                  </p>
+               </li>
+               <li>
+                  <p>
+                     <tt>/tools</tt> (<tt>jetty</tt>, <tt>ant</tt>, <tt>wrapper</tt>)</p>
+               </li>
+               <li>
+                  <p>
+                     <tt>/webapp</tt> (<strong>WEB-INF/data</strong>, <tt>WEB-INF/logs</tt>)</p>
+               </li>
+               <li>
+                  <p>
+                     <tt>/autodeploy</tt>
+                  </p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Important Files</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>jar archives (ex: <tt>start.jar</tt>, <tt>exist.jar</tt>)</p>
+                  <p>Can be launched with <em>java -jar archive.jar main options</em>
+                  </p>
+               </li>
+               <li>
+                  <p>Shell scripts [<tt>.bat</tt> ou <tt>.sh</tt>] : more convenient way to launch the jar archives</p>
+                  <p>See online documentation <a href="http://localhost:8080/exist/apps/doc/advanced-installation.xml#bin-executables"
+                        target="_blank">About the Scripts in the bin Directory</a>
+                  </p>
+               </li>
+               <li>
+                  <p>Files <tt>*.properties</tt>
+                  </p>
+                  <ul class="sublist">
+                     <li>preferences for the build system (ant with <tt>build.properties</tt>)</li>
+                     <li>preferences for some command line tools</li>
+                  </ul>
+               </li>
+               <li>
+                  <p>Very important XML configuration files</p>
+                  <ul class="sublist">
+                     <li>
+                        <tt>conf.xml</tt>
+                     </li>
+                     <li>
+                        <tt>web.xml</tt>
+                     </li>
+                     <li>
+                        <tt>log4j.xml</tt>
+                     </li>
+                     <li>
+                        <tt>controller-config.xml</tt>
+                     </li>
+                  </ul>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>3 execution models</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>As an <strong>embedded library</strong> into a Java application</p>
+               </li>
+               <li>
+                  <p>As a <strong>standalone application</strong> running its own web server</p>
+                  <p>
+                     <em>Embeds a lightweigth Jetty</em>
+                  </p>
+               </li>
+               <li>
+                  <p>As a <strong>web application</strong> into a web servet container</p>
+                  <p>
+                     <em>Servlet Architecture</em>
+                  </p>
+                  <p>
+                     <strong>Default</strong> : registers itself as a unique application in a Jetty included in the distribution</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>At least 5 ways to start...</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>With <tt>bin/server.sh[.bat]</tt>
+                  </p>
+                  <p>To launch <em>standalone</em> version</p>
+               </li>
+               <li>
+                  <p>Double-click <tt>start.jar</tt> or</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre>java -jar start.jar</pre>
+                  </div>
+                  <p>Graphical launcher using properties in <tt>vm.properties</tt> for web application version</p>
+               </li>
+               <li>
+                  <p>With <tt>bin/startup.sh[.bat]</tt>
+                  </p>
+                  <p>Command line way to launch web aplication version</p>
+                  <p>
+                     <strong>Add ''&amp;'' to start in background and leave terminal open while developing</strong>
+                  </p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre>./bin/startup.sh &amp;</pre>
+                  </div>
+               </li>
+               <li>
+                  <p>With <tt>tools/wrapper/bin/exist.sh[.bat]</tt>
+                  </p>
+                  <p>Launch web application version as a service</p>
+                  <p>Useful for production servers ( <em>Linux Daemon</em>  or Windows Service)</p>
+                  <p>
+                     <em>Requires extra configuration effort to install wrapper</em>
+                  </p>
+               </li>
+               <li>
+                  <p>With a WAR deployed in a web container</p>
+                  <p>There is an <em>ant</em> target to build the WAR from the distribution</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>How to check if its running ?</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Command line with <tt>ps</tt>
+                  </p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre>ps -ef | grep jetty</pre>
+                  </div>
+               </li>
+               <li>
+                  <p>Open <tt>EXIST_HOME/webapp/WEB-INF/logs/exist.log</tt> in log files (or <tt>xmldb.log</tt>)</p>
+                  <p>
+                     <em>(default location)</em>
+                  </p>
+               </li>
+               <li>
+                  <p>Invoke JMX (JavaManagementExtensions) agent which is available through a web service</p>
+                  <p>
+                     <a href="http://localhost:8080/exist/status" target="_blank">http://localhost:8080/exist/status</a>
+                  </p>
+                  <p>
+                     <em>If you haven't removed its servlet from web.xml configuration file</em>
+                  </p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Launch Failures</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Port already in use</p>
+                  <p>Port configured inside <tt>tools/jetty/etc/jetty.xml</tt>
+                  </p>
+               </li>
+               <li>
+                  <p>Another database instance running</p>
+                  <p>Launch blocked by lock files</p>
+               </li>
+               <li>
+                  <p>Incomplete last stop that left lock files into position</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre>$ ls data/*.lck
+data/dbx_dir.lck	data/journal.lck
+</pre>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Stopping Server</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Command line</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre>./bin/shutdown -P {password}</pre>
+                  </div>
+               </li>
+               <li>
+                  <p>From Dashboard</p>
+               </li>
+               <li>
+                  <p>If launched as a service</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre>sudo service exist stop</pre>
+                  </div>
+               </li>
+               <li>
+                  <p>Missing feature : no <em>Hot Restart</em>
+                  </p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Executing an XQuery Script</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>With classical REST interface from within database</p>
+               </li>
+               <li>
+                  <p>With XQueryServlet from the file system</p>
+               </li>
+               <li>
+                  <p>Using URL Rewriting from a controller.xql file</p>
+               </li>
+               <li>
+                  <p>You can try with this very simple XQuery program (save to <tt>hello.xql</tt>)</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="ace">Ace</button>
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre data-language="xquery">xquery version "1.0";
+(: ======================================================================
+   Hello World Example
+   ======================================================================
+:)
+
+declare option exist:serialize "method=text media-type=text/plain";
+
+"Hello World !"</pre>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+   </body>
+</html>

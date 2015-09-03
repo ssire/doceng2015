@@ -1,0 +1,152 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
+      xml:lang="fr">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+      <meta name="copyright"
+            content="Tutorial Web application development with XML © S. Sire - Oppidoc pour DocEng 2015 (generated 02/09/2015)"/>
+      <title>Tutorial Web application development with XML</title>
+      <link rel="stylesheet"
+            type="text/css"
+            media="screen, projection, print"
+            href="resources/Slidy2/styles/slidy.css"/>
+      <link rel="stylesheet"
+            type="text/css"
+            media="screen, projection, print"
+            href="resources/Slidy2/styles/w3c-blue.css"/>
+      <link rel="stylesheet"
+            type="text/css"
+            media="screen, projection, print"
+            href="resources/cours.css"/>
+      <script src="resources/Slidy2/scripts/slidy.js"
+              charset="utf-8"
+              type="text/javascript">//</script>
+      <script src="resources/jquery/js/jquery-1.7.1.min.js">//</script>
+      <script src="resources/ace-builds-master/src-noconflict/ace.js"
+              type="text/javascript"
+              charset="utf-8">//</script>
+      <script>
+          (function () {
+            function doScaleText ( e, incr ) {
+              var mask = $(e.target).closest('.mask'),
+                  pre = mask.find('pre'),
+                  size, m, nsize;
+              if (pre.length === 0) {
+                pre = mask.find('div.pre');
+              }
+              size = pre.css('font-size') || '20';
+              m = size.match(/(\d+)/);
+              nsize = (m) ? parseInt(m) : 20;
+              pre.css('font-size', (nsize + incr) + 'px');
+            };
+            function doColorize ( e ) {
+              var root = $(e.target).closest('.mask'),
+                  pre = root.find('pre'),
+                  lines = pre.contents(),
+                  size = pre.css('font-size') || '20px',
+                  t = root.append('&lt;div class="pre"/&gt;').find('div.pre').get(0),
+                  language = pre.attr('data-language');
+              lines.each(function(i,e){t.appendChild(e)});
+              pre.remove();
+              $(t).css('font-size', size);
+              editor = ace.edit(t);
+              editor.setOptions({
+                    readOnly: true,
+                    highlightActiveLine: false,
+                    highlightGutterLine: false,
+                    maxLines: Infinity
+              });
+              editor.setTheme("ace/theme/textmate");
+              editor.getSession().setMode("ace/mode/" + language);
+              // $(e.target).css('z-index', 0);
+              $(e.target).hide();
+            };
+            function init() {
+              $('div.commands &gt; button[data-command="ace"]').click( doColorize );
+              $('div.commands &gt; button[data-command="text-in"]').click( function (e) { doScaleText(e,2) } );
+              $('div.commands button[data-command="text-out"]').click( function (e) { doScaleText(e,-2) } );
+            };
+            jQuery(init);
+          }());
+      </script>
+   </head>
+   <body>
+      <div class="background"/>
+      <div class="slide">
+         <h1>DocEng 2015 Half-day Tutorial</h1>
+         <div class="region">
+            <ul class="block none">
+               <li>
+                  <h2>Developing web applications with document technologies and enjoying it !</h2>
+               </li>
+            </ul>
+         </div>
+         <div class="region">
+            <ul class="block none">
+               <li>
+                  <p>Par Stéphane Sire</p>
+                  <p>
+                     <a href="http://www.oppidoc.fr" target="_blank">Oppidoc</a>
+                  </p>
+               </li>
+            </ul>
+            <ul class="block none">
+               <li>
+                  <div class="illustration" style="text-align:center">
+                     <img src="images/minion.jpg" style="width:50%"/>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Program</h1>
+         <div class="region">
+            <ul class="block none">
+               <li>
+                  <h2>14:00-14:30 Welcome and Demonstrations</h2>
+               </li>
+               <li>
+                  <h2>14:30-15:30 Restful Application Design and XML</h2>
+                  <p>A look at <a href="./architecture.xhtml" target="_blank">application architecture</a> and its reflection into an XML language for mapping incoming HTTP requests to simple pipelines.</p>
+               </li>
+               <li>
+                  <h2>15:30-16:00 Coffee Break</h2>
+               </li>
+               <li>
+                  <h2>16:00-16:45 Hands on eXist-DB</h2>
+               </li>
+               <li>
+                  <p>Bring your laptop and we'll guide you step by step to <a href="./install-and-configure.xhtml" target="_blank">install and configure</a> eXist-DB and to generate your first pages.</p>
+               </li>
+               <li>
+                  <h2>16:45-17:30 Good Practices for Full-XML Stack Development</h2>
+                  <p>A look at <a href="./practices.xhtml" target="_blank">data, code organization and good practices</a> to make the most out of the XQuery and XSLT language combination.</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Credits</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Courseware written in XML</p>
+                  <ul class="sublist">
+                     <li>Slides player with <a href="http://www.w3.org/Talks/Tools/Slidy2/" target="_blank">slidy</a> (W3C)</li>
+                     <li>XSLT transformation to XHTML with <a href="http://www.saxonica.com/" target="_blank">saxon</a>
+                     </li>
+                  </ul>
+               </li>
+               <li>
+                  <p>XML source written with the <a href="http://ssire.github.io/axel/" target="_blank">AXEL</a> javascript library (Adaptable XML Editing Library)</p>
+               </li>
+               <li>
+                  <p>Syntatic coloration of code examples with <a href="http://ace.c9.io/" target="_blank">Ace</a>
+                  </p>
+               </li>
+            </ul>
+         </div>
+      </div>
+   </body>
+</html>

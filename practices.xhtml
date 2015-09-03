@@ -1,0 +1,634 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
+      xml:lang="fr">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+      <meta name="copyright"
+            content="Tutorial Web application development with XML © S. Sire - Oppidoc pour DocEng 2015 (generated 02/09/2015)"/>
+      <title>Tutorial Web application development with XML</title>
+      <link rel="stylesheet"
+            type="text/css"
+            media="screen, projection, print"
+            href="resources/Slidy2/styles/slidy.css"/>
+      <link rel="stylesheet"
+            type="text/css"
+            media="screen, projection, print"
+            href="resources/Slidy2/styles/w3c-blue.css"/>
+      <link rel="stylesheet"
+            type="text/css"
+            media="screen, projection, print"
+            href="resources/cours.css"/>
+      <script src="resources/Slidy2/scripts/slidy.js"
+              charset="utf-8"
+              type="text/javascript">//</script>
+      <script src="resources/jquery/js/jquery-1.7.1.min.js">//</script>
+      <script src="resources/ace-builds-master/src-noconflict/ace.js"
+              type="text/javascript"
+              charset="utf-8">//</script>
+      <script>
+          (function () {
+            function doScaleText ( e, incr ) {
+              var mask = $(e.target).closest('.mask'),
+                  pre = mask.find('pre'),
+                  size, m, nsize;
+              if (pre.length === 0) {
+                pre = mask.find('div.pre');
+              }
+              size = pre.css('font-size') || '20';
+              m = size.match(/(\d+)/);
+              nsize = (m) ? parseInt(m) : 20;
+              pre.css('font-size', (nsize + incr) + 'px');
+            };
+            function doColorize ( e ) {
+              var root = $(e.target).closest('.mask'),
+                  pre = root.find('pre'),
+                  lines = pre.contents(),
+                  size = pre.css('font-size') || '20px',
+                  t = root.append('&lt;div class="pre"/&gt;').find('div.pre').get(0),
+                  language = pre.attr('data-language');
+              lines.each(function(i,e){t.appendChild(e)});
+              pre.remove();
+              $(t).css('font-size', size);
+              editor = ace.edit(t);
+              editor.setOptions({
+                    readOnly: true,
+                    highlightActiveLine: false,
+                    highlightGutterLine: false,
+                    maxLines: Infinity
+              });
+              editor.setTheme("ace/theme/textmate");
+              editor.getSession().setMode("ace/mode/" + language);
+              // $(e.target).css('z-index', 0);
+              $(e.target).hide();
+            };
+            function init() {
+              $('div.commands &gt; button[data-command="ace"]').click( doColorize );
+              $('div.commands &gt; button[data-command="text-in"]').click( function (e) { doScaleText(e,2) } );
+              $('div.commands button[data-command="text-out"]').click( function (e) { doScaleText(e,-2) } );
+            };
+            jQuery(init);
+          }());
+      </script>
+   </head>
+   <body>
+      <div class="background"/>
+      <div class="slide">
+         <h1>XML Full-stack Good Practices</h1>
+         <div class="region">
+            <ul class="block decimal">
+               <li>
+                  <p>Code and Data Organization</p>
+               </li>
+               <li>
+                  <p>A universal Pipeline for Page Templating</p>
+               </li>
+               <li>
+                  <p>Domain Specific Languages Everywhere</p>
+               </li>
+               <li>
+                  <p>Composite Page</p>
+               </li>
+               <li>
+                  <p>CRUD Controllers</p>
+               </li>
+               <li>
+                  <p>More Patterns</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Genesis</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>These patterns were born from our practice with the <a href="http://www.github.com/ssire/oppidum" target="_blank">Oppidum XQuery web application framework</a>
+                  </p>
+               </li>
+               <li>
+                  <p>To install Oppidum :</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre>mkdir -p EXIST_HOME/webapp/projects
+cd EXIST_HOME/webapp/projects
+git clone https://github.com/ssire/oppidum.git # no SSH key configured
+git clone git@github.com:ssire/oppidum.git # SH Key configured
+cd oppidum/scripts
+./bin/boostrap.sh {your-admin-password}
+open http://localhost:8080/exist/projects/oppidum</pre>
+                  </div>
+               </li>
+               <li>
+                  <p>NOTE: <em>currently Oppidum does not run on native Windows eXist-DB installation because of path character (to be fixed soon)</em>
+                  </p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Database collections</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>By default eXist-DB contains the following collections</p>
+                  <ul class="sublist">
+                     <li>
+                        <tt>/db</tt>
+                     </li>
+                     <li>
+                        <tt>/db/system</tt>
+                     </li>
+                     <li>
+                        <tt>/db/system/config</tt>
+                     </li>
+                     <li>
+                        <tt>/db/apps</tt>
+                     </li>
+                  </ul>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Proposed Conventions</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>We use these conventions with the Oppidum framework</p>
+               </li>
+               <li>
+                  <p>Separate Application users data from Application configuration data</p>
+                  <ul class="sublist">
+                     <li>
+                        <tt>/db/sites/{application}</tt>
+                     </li>
+                     <li>
+                        <tt>/db/www/{application}/config</tt>
+                     </li>
+                  </ul>
+               </li>
+               <li>
+                  <p>Decide a place for Application code</p>
+                  <ul class="sublist">
+                     <li>under <tt>EXIST_HOME/webapp/{extra level}/{application}</tt> in file system</li>
+                     <li>under <tt>/db/www/{application}</tt> in database</li>
+                  </ul>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>File System vs Database Debate</h1>
+         <div class="region" style="float:left;width:49%">
+            <ul class="block none">
+               <li>
+                  <h2>File System</h2>
+               </li>
+            </ul>
+            <ul class="block bullet">
+               <li>
+                  <p>direct integration with distributed version control systems like Git</p>
+               </li>
+               <li>
+                  <p>direct compatibility with source code editors (EMACS, TextMate, etc)</p>
+               </li>
+               <li>
+                  <p>direct server deployment with Git</p>
+               </li>
+               <li>
+                  <p>relies on XQueryServlet to execute XQuery from files system</p>
+               </li>
+            </ul>
+         </div>
+         <div class="region" style="float:left;width:49%">
+            <ul class="block none">
+               <li>
+                  <h2>Database</h2>
+               </li>
+            </ul>
+            <ul class="block bullet">
+               <li>
+                  <p>direct integration with XML programming environments (eXide, Oxygen)</p>
+               </li>
+               <li>
+                  <p>indirect compatibility with source code editors with webDAV</p>
+               </li>
+               <li>
+                  <p>indirect deployment through packaging as XAR bundle archives</p>
+               </li>
+               <li>
+                  <p>XQueryServlet may be deprecated</p>
+               </li>
+               <li>
+                  <p>
+                     <em>Git integration in progress ?</em>
+                  </p>
+               </li>
+            </ul>
+         </div>
+         <div class="region" style="clear:left">
+            <ul class="block bullet">
+               <li>
+                  <p>The decision depends on your development habits</p>
+               </li>
+               <li>
+                  <p>Debate is not over but eXist-DB team seems to privilege second option...</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Page Templating System</h1>
+         <div class="region">
+            <ul class="block none">
+               <li>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="ace">Ace</button>
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre data-language="xml">&lt;html xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:site="http://oppidoc.com/oppidum/site"&gt;
+  &lt;body&gt;
+    &lt;div id="article"&gt;
+      &lt;site:content/&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+                  </div>
+               </li>
+            </ul>
+            <ul class="block none">
+               <li>
+                  <div class="illustration">
+                     <img src="images/oppidum-mesh.png" style="width:100%"/>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Sample Flow</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Model output</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="ace">Ace</button>
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre data-language="xml">&lt;Document&gt;
+  &lt;Parag&gt;Hello World&lt;/Parag&gt;
+&lt;/Document&gt;</pre>
+                  </div>
+               </li>
+               <li>
+                  <p>View Output</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="ace">Ace</button>
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre data-language="xml">&lt;site:view&gt;
+  &lt;site:content&gt;
+    &lt;p&gt;Hello World&lt;/p&gt;
+  &lt;/site:content&gt;
+&lt;/site:view&gt;</pre>
+                  </div>
+               </li>
+               <li>
+                  <p>Epilogue Output</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="ace">Ace</button>
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre data-language="xml">&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+  &lt;body&gt;
+    &lt;div id="article"&gt;
+      &lt;p&gt;Hello World&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Page Templating Example</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Form feedback <a href="http://localhost:9191/exist/projects/poll/about" target="_blank">about</a> page</p>
+               </li>
+               <li>
+                  <p>Simple (Model) ==&gt; (Epilogue) pipeline (Model output is already a View)</p>
+               </li>
+               <li>
+                  <p>Epilogue does blend <tt>views/about.xml</tt> (model output) into <tt>mesh/home.xhtml</tt> (template file)</p>
+               </li>
+               <li>
+                  <p>Rendering done by the <tt>local:render()</tt> epilogue templating function</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Epilogue Templating Function</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Universal typeswitch function (cut-and-paste between projects) to include in the epilogue</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="ace">Ace</button>
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre data-language="xml">declare function local:render( $cmd as element(), $source as element(),
+  $view as element()* ) as element()
+{
+  element { node-name($source) }
+  {
+    ...typeswitch function calling site:branch function
+       for every  site:* extension point...
+  }
+};</pre>
+                  </div>
+               </li>
+               <li>
+                  <p>Application-dependent function defining the extension points</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="ace">Ace</button>
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre data-language="xml">declare function site:branch( $cmd as element(), $source as element(),
+  $view as element()* ) as node()*
+{
+  typeswitch($source)
+  case element(site:skin) return site:skin($cmd, $view)
+  case element(site:lang) return site:lang($cmd, $view)
+  case element(site:navigation) return site:navigation($cmd, $view)
+  case element(site:error) return site:error($cmd, $view)
+  case element(site:login) return site:login($cmd)
+  ... (: default implicitly manages other modules :)
+  default return $view/*[local-name(.) = local-name($source)]/(*|text())
+};</pre>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Domain Specific Languages</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Turn Code into Data</p>
+               </li>
+               <li>
+                  <p>Very easy to implement with XQuery and/or XSLT</p>
+               </li>
+               <li>
+                  <p>Examples</p>
+                  <ul class="sublist">
+                     <li>forms generation languages (ex: feedback questionnaires)</li>
+                     <li>view construction languages (ex: statistical graphs)</li>
+                     <li>alerts list checking language</li>
+                  </ul>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Forms Generation Language</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>See a sample <a href="http://localhost:9191/exist/projects/poll/forms/azerty"
+                        target="_blank">feedback questionnaire</a>
+                  </p>
+               </li>
+               <li>
+                  <p>Creation of a new questionnaire with <tt>POST /questionnaires</tt>
+                  </p>
+               </li>
+               <li>
+                  <p>Questionnaires are customizable with variables</p>
+               </li>
+               <li>
+                  <p>Generated questionnaires are themselves Pate Templates (see previous patterns)</p>
+               </li>
+               <li>
+                  <p>Runtime Questionnaire rendering with <tt>GET /questionnaires/{name}?o=reference</tt>
+                  </p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Feedback Questionnaire Architecture</h1>
+         <div class="region">
+            <ul class="block none">
+               <li>
+                  <div class="illustration">
+                     <img src="images/poll-pipelines.png" style="width:100%"/>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Questionnaire Generation</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>
+                     <tt>POST /questionnaires</tt> ... of  a &lt;Poll&gt; document</p>
+               </li>
+            </ul>
+            <ul class="block none">
+               <li>
+                  <div class="illustration">
+                     <img src="images/poll-generation-pipeline.png" style="width:100%"/>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Customized Form Generation</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>
+                     <tt>GET /questionnaires/sample?o=azerty</tt>
+                  </p>
+               </li>
+            </ul>
+            <ul class="block none">
+               <li>
+                  <div class="illustration">
+                     <img src="images/poll-feedback-pipeline.png" style="width:100%"/>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Composite Page Pattern</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Use client-side Javascript to combine several server-side pipelines to render a page</p>
+               </li>
+               <li>
+                  <p>Feedback questionnaire example</p>
+                  <ul class="sublist">
+                     <li>container page : <a href="http://localhost:9191/exist/projects/poll/forms/azerty"
+                           target="_blank">/forms/azerty</a>
+                     </li>
+                     <li>formular loading : <a href="http://localhost:9191/exist/projects/questionnaires/sample?o=azerty"
+                           target="_blank">/questionnaires/sample?o=azerty</a>
+                     </li>
+                     <li>data loading : <a href="http://localhost:9191/exist/projects/poll/answers/azerty"
+                           target="_blank">/answers/azerty</a>
+                     </li>
+                  </ul>
+               </li>
+               <li>
+                  <p>Debug tip for Oppidum</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="ace">Ace</button>
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre data-language="sh">curl URL[.xml, .raw, .debug] | tidy -g- i -xml</pre>
+                  </div>
+                  <p/>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Illustration</h1>
+         <div class="region">
+            <ul class="block none">
+               <li>
+                  <div class="illustration" style="text-align:center">
+                     <img src="images/page-composition.png" style="width:50%"/>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>CRUD Controller Pattern</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Source file names and organization should reflect</p>
+                  <ul class="sublist">
+                     <li>Object / Document entities</li>
+                     <li>actions on Objet / Document entities</li>
+                  </ul>
+               </li>
+               <li>
+                  <p>Two approaches</p>
+                  <ul class="sublist">
+                     <li>one file per action (create / read / delete / etc.)</li>
+                     <li>
+                        <strong>group actions per Objet / Document entity in a single file</strong>
+                     </li>
+                  </ul>
+               </li>
+               <li>
+                  <p>In any case code organization (incl. hierarchy) decoupled from URL space because of the mapping layer</p>
+                  <p>
+                     <em>a flat module hierarchy is sufficient in most cases</em>
+                  </p>
+               </li>
+               <li>
+                  <p>This is essential for maintainability</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>More Design Patterns</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Skinning applications</p>
+                  <p>
+                     <em>declarative way to keep the association between CSS and JS files and application pages into a skin.xml resource inside the database</em>
+                  </p>
+               </li>
+               <li>
+                  <p>Error and message management (Flash a-la Ruby on Rails)</p>
+               </li>
+               <li>
+                  <p>Data mapping</p>
+                  <p>
+                     <em>maintaining a relation between URL input space hierarchy and database collections hierarchy</em>
+                  </p>
+               </li>
+               <li>
+                  <p>Form-based access control</p>
+               </li>
+               <li>
+                  <p>Development life cycle (mode="dev|test|prod")</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Further Readings</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>eXist - A NoSQL Document Database and Application Platform</p>
+                  <div class="illustration">
+                     <a class="e-link"
+                        href="http://shop.oreilly.com/product/0636920026525.do"
+                        target="_blank">
+                        <img src="icons/external_link.png"/>
+                     </a>
+                     <img src="images/eXist.gif" style="width:15%"/>
+                  </div>
+                  <p>By Erik Siegel, Adam Retter (december 2014)</p>
+               </li>
+               <li>
+                  <p>The poll application is available on Github : <a href="http://www.github.com/ssire/poll" target="_blank">http://www.github.com/ssire/poll</a>
+                  </p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre>cd EXIST_HOME/webapp/projects
+git clone https://github.com/ssire/poll.git # no SSH key configured
+git clone git@github.com:ssire/poll.git # SH Key configured
+cd poll/scripts
+./bin/boostrap.sh {your-admin-password}
+open http://localhost:8080/exist/projects/poll</pre>
+                  </div>
+                  <p>Pre-requisite : you must have installed Oppidum in projects directory too</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+   </body>
+</html>

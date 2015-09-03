@@ -1,0 +1,619 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <!-- 1. ROOT ELEMENT-->
+  <xs:element name="euro">
+    <xs:annotation>
+      <xs:documentation>This is the root element of the instances. It contains six elements : teams, matchofficials, stadiums, matchs, bets and opinions.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="teams"/>
+        <xs:element ref="matchofficials"/>
+        <xs:element ref="stadiums"/>
+        <xs:element ref="matchs"/>
+        <xs:element ref="bets"/>
+        <xs:element ref="opinions"/>
+      </xs:sequence>
+    </xs:complexType>
+    <!-- Some keys -->
+    <xs:key name="letterGroupKey">
+      <xs:annotation>
+        <xs:documentation>This key verifies the uniqueness of the letters representing the groups.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="teams/group"/>
+      <xs:field xpath="@letter"/>
+    </xs:key>
+    <xs:keyref name="letterGroupKeyRef" refer="letterGroupKey">
+      <xs:annotation>
+        <xs:documentation>A reference to a letter of a group for the structure of the matchs.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./matchs/groupMatchs/group"/>
+      <xs:field xpath="@id"/>
+    </xs:keyref>
+    <xs:key name="countryTeamKey">
+      <xs:annotation>
+        <xs:documentation>This key verifies the uniqueness of every country in the Euro.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./teams/group/team"/>
+      <xs:field xpath="@country"/>
+    </xs:key>
+    <xs:keyref name="countryTeamKeyRef" refer="countryTeamKey">
+      <xs:annotation>
+        <xs:documentation>All references to a country.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./matchs/groupMatchs/group/match/team1|./matchs/groupMatchs/group/match/team2|./matchs/quarterFinalsMatchs/match/team1|./matchs/quarterFinalsMatchs/match/team2|./matchs/semiFinalsMatchs/match/team1|./matchs/semiFinalsMatchs/match/team2|./matchs/thirdPlaceMatch/team1|./matchs/thirdPlaceMatch/team2|./matchs/finalMatch/team1|./matchs/finalMatch/team2|./opinions/onteams/team|./opinions/onteams/team"/>
+      <xs:field xpath="@country"/>
+    </xs:keyref>
+    <xs:key name="idPlayerKey">
+      <xs:annotation>
+        <xs:documentation>This key verifies the uniqueness of the IDs of all players.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./teams/group/team/player"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:keyref name="idPlayerKeyRef" refer="idPlayerKey">
+      <xs:annotation>
+        <xs:documentation>A reference to the players ID.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./opinions/onplayers/player"/>
+      <xs:field xpath="@id"/>
+    </xs:keyref>
+    <xs:key name="officialIdKey">
+      <xs:annotation>
+        <xs:documentation>This key verifies the uniqueness of the officials' IDs.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./matchofficials/official"/>
+      <xs:field xpath="@officialId"/>
+    </xs:key>
+    <xs:keyref name="officialIdKeyRef" refer="officialIdKey">
+      <xs:annotation>
+        <xs:documentation>There are several references to the officials' IDs.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./matchs/groupMatchs/group/match|./matchs/groupMatchs/group/match|./matchs/semiFinalsMatchs/match|./matchs/thirdPlaceMatch|./matchs/finalMatch"/>
+      <xs:field xpath="@official"/>
+    </xs:keyref>
+    <xs:key name="stadiumIdKey">
+      <xs:annotation>
+        <xs:documentation>This key verifies the uniqueness of the stadiums' IDs.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./stadiums/stadium"/>
+      <xs:field xpath="@stadiumId"/>
+    </xs:key>
+    <xs:keyref name="stadiumIdKeyRef" refer="stadiumIdKey">
+      <xs:annotation>
+        <xs:documentation>A reference to a stadium.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./matchs/groupMatchs/group/match|./matchs/groupMatchs/group/match|./matchs/semiFinalsMatchs/match|./matchs/thirdPlaceMatch|./matchs/finalMatch"/>
+      <xs:field xpath="@stadium"/>
+    </xs:keyref>
+    <xs:key name="matchIdKey">
+      <xs:annotation>
+        <xs:documentation>This key verifies the uniqueness of the matchs' IDs.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./matchs/groupMatchs/group/match|./matchs/thirdPlaceMatch|./matchs/finalMatch"/>
+      <xs:field xpath="@matchId"/>
+    </xs:key>
+    <xs:keyref name="matchIdKeyRef" refer="matchIdKey">
+      <xs:annotation>
+        <xs:documentation>References to the matchs.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./bets/match|./opinions/onmatchs/match"/>
+      <xs:field xpath="@id"/>
+    </xs:keyref>
+  </xs:element>
+  <!-- 2. ELEMENTS -->
+  <!-- 2.1. teams element -->
+  <xs:element name="teams">
+    <xs:annotation>
+      <xs:documentation>This element represents a sequence of four groups.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence minOccurs="4" maxOccurs="4">
+        <xs:element name="group" type="groupType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- 2.2. matchofficials -->
+  <xs:element name="matchofficials">
+    <xs:annotation>
+      <xs:documentation>This element contains the list of every officials (at least one).</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence maxOccurs="unbounded">
+        <xs:element name="official" type="matchOfficialType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- 2.3. stadiumsElement -->
+  <xs:element name="stadiums">
+    <xs:annotation>
+      <xs:documentation>This element contains the list of every stadiums (at least one).</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence maxOccurs="unbounded">
+        <xs:element name="stadium" type="stadiumType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- 2.4. matchsElement -->
+  <xs:element name="matchs">
+    <xs:annotation>
+      <xs:documentation>This element contains all the matchs grouped in different elements.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="groupMatchs"/>
+        <xs:element ref="quarterFinalsMatchs"/>
+        <xs:element ref="semiFinalsMatchs"/>
+        <!-- if the final is still not available (don't know which teams, no need to have this element -->
+        <xs:element name="thirdPlaceMatch" type="matchType" minOccurs="0"/>
+        <xs:element name="finalMatch" type="matchType" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- 2.5. groupMatchsElement -->
+  <xs:element name="groupMatchs">
+    <xs:annotation>
+      <xs:documentation>This element defines the four group element which will contain all the matchs of each group.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence minOccurs="4" maxOccurs="4">
+        <xs:element name="group">
+          <xs:annotation>
+            <xs:documentation>This element contains all the matchs related to the specified group.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="match" type="matchType"/>
+            </xs:sequence>
+            <xs:attribute name="id" type="letterType" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:key name="letterGroupMatchsKey">
+      <xs:annotation><xs:documentation>This key verifies that the letters are unique in the groupMatchs element.</xs:documentation></xs:annotation>
+      <xs:selector xpath="./group"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+  </xs:element>
+  <!-- 2.6. quarterFinalsMatchsElement -->
+  <xs:element name="quarterFinalsMatchs">
+    <xs:annotation>
+      <xs:documentation>This element contains all the matchs of the quarter finals.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="8">
+        <xs:element name="match" type="matchType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- 2.7. semiFinalsMatchsElement -->
+  <xs:element name="semiFinalsMatchs">
+    <xs:annotation>
+      <xs:documentation>This element contains all the matchs of the semi finals.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="4">
+        <xs:element name="match" type="matchType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- 2.8. bets element -->
+  <xs:element name="bets">
+    <xs:annotation>
+      <xs:documentation>This element contains matchs element which contain all the bets related to them.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="match" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation>This element contains all the bets related to the specified match.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="bet" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:key name="noDoubleMatchId">
+      <xs:annotation>
+        <xs:documentation>This key verifies that there is no more than one match element per match in the bets element.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./match"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+  </xs:element>
+  <!-- 2.9. bet element -->
+  <xs:element name="bet">
+    <xs:annotation>
+      <xs:documentation>This element contains all information related to a bet.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="scoreteam1" type="xs:nonNegativeInteger" use="required"/>
+      <xs:attribute name="scoreteam2" type="xs:nonNegativeInteger" use="required"/>
+      <xs:attribute name="amount">
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minExclusive value="0"/>
+            <xs:maxInclusive value="1000"/>
+            <xs:pattern value="[0-9]{1,4}(\.[0-9]{1,2})?"/>
+            <!-- only positive decimal number -->
+            <!-- maximum amount is for example 1000 -->
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="name" type="nameType"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- 2.10. opinions element -->
+  <xs:element name="opinions">
+    <xs:annotation>
+      <xs:documentation>This element groups the three parts of the opinions : about players, teams and matchs.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="onplayers" minOccurs="0"/>
+        <xs:element ref="onteams" minOccurs="0"/>
+        <xs:element ref="onmatchs" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- 2.11. onplayers element -->
+  <xs:element name="onplayers">
+    <xs:annotation>
+      <xs:documentation>This element contains all opinions about players (ordered by player).</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="player" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation>This element contains all opinions related to the specified player.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="opinion" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:key name="onplayersKey">
+      <xs:annotation>
+        <xs:documentation>This key verifies that there is no more than one player element per player.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./player"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+  </xs:element>
+  <!-- 2.12. onteams element -->
+  <xs:element name="onteams">
+    <xs:annotation>
+      <xs:documentation>This element contains all opinions about teams (ordered by team).</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="team" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation>This element contains all opinions related to the specific team.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="opinion" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="country" type="nameType" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:key name="onteamsKey">
+      <xs:annotation>
+        <xs:documentation>This key verifies that there is no more than 1 team element per team.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./team"/>
+      <xs:field xpath="@country"/>
+    </xs:key>
+  </xs:element>
+  <!-- 2.13. onmatchs element -->
+  <xs:element name="onmatchs">
+    <xs:annotation>
+      <xs:documentation>This element contains all opinions about matchs (order by match).</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="match" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation>This element contains all opinions about the specified match.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="opinion" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:key name="onmatchsKey">
+      <xs:annotation>
+        <xs:documentation>This key verifies that there is no more than one match element per match.</xs:documentation>
+      </xs:annotation>
+      <xs:selector xpath="./match"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+  </xs:element>
+  <!-- 2.14. opinion standard element -->
+  <xs:element name="opinion">
+    <xs:annotation>
+      <xs:documentation>This element is the basic element for the opinions. It contains information about the opinion : the name of the author, the language of the opinion, and the opinion itself.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="name" type="nameType" use="required"/>
+          <xs:attribute name="lang" type="xs:language" use="optional" default="en"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- 3. TYPES -->
+  <!-- 3.1. actionGroup : group of attributes to define a goal, a red or yellow cards (go to 3.9 matchType) -->
+  <xs:attributeGroup name="actionGroup">
+    <xs:annotation>
+      <xs:documentation>This attributes' group contains the attributes common to different element : goal, red and yellow cards.</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="player" type="xs:positiveInteger" use="required"/>
+    <xs:attribute name="time" use="required">
+      <xs:simpleType>
+        <xs:annotation>
+          <xs:documentation>This type specifies the time at which the "event" (goal, yellow or red cards) occurs. So it must be greater than 0, but less than 120 minutes. (120 minutes of game is too much for a football match, but it's a margin).</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:duration">
+          <xs:minInclusive value="PT0M0S"/>
+          <xs:maxInclusive value="PT120M0S"/>
+          <!-- au max 120 minutes de jeu c'est déjà beaucoup -->
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:simpleType name="nameType">
+    <xs:annotation>
+      <xs:documentation>This type represents a restricted token which only contains Latin (basic and extended) letters.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:pattern value="[\p{IsBasicLatin}\p{IsLatin-1Supplement}\p{IsLatinExtended-A}\p{IsLatinExtended-B}]*"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:pattern value="[\p{L} \-]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="httpURI">
+    <xs:annotation>
+      <xs:documentation>This type is used to specify an URI beginning with http://. This is useful for this schema as it is supposed to represent the data for a website.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:anyURI">
+      <xs:pattern value="http://.*"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="serviceDateType">
+    <xs:annotation>
+      <xs:documentation>This type represents a year, which minimum value is 1951 and maximum value is 2008. It is used for the service date, as we assumed that a match official or a coach cannot be in service if he begins before 1951. But he can be a match official or a coach since this year, so 2008 is allowed.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:gYear">
+      <xs:minExclusive value="1950"/>
+      <xs:maxInclusive value="2008"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="letterType">
+    <xs:annotation>
+      <xs:documentation>This type represents only one character. It is used for the group ID.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:length value="1"/>
+      <xs:pattern value="[A-Z]"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- 3.2. personType -->
+  <xs:complexType name="personType" abstract="true">
+    <xs:annotation>
+      <xs:documentation>This type is the basic type for a person. It contains information about the lastname, the firstname, the birth, but also an optional picture.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="lastname" type="nameType"/>
+      <xs:element name="firstname" type="nameType"/>
+      <xs:element name="img" type="httpURI" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="birth" use="optional">
+      <xs:simpleType>
+        <xs:annotation>
+          <xs:documentation>The type of the birth has some restriction. It cannot be before 1900-01-01 or after 200-12-31. Even if it can still allow very old persons or very young persons.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:date">
+          <xs:minInclusive value="1900-01-01"/>
+          <xs:maxInclusive value="2000-12-31"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <!-- 3.3. playerType extends personType -->
+  <xs:complexType name="playerType">
+    <xs:annotation>
+      <xs:documentation>This type represents a player. It inherits the information in the personType type. It adds an ID, a number and a position.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="personType">
+        <xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+        <xs:attribute name="number" type="xs:nonNegativeInteger" use="required"/>
+        <xs:attribute name="position" use="required">
+          <xs:simpleType>
+            <xs:annotation>
+              <xs:documentation>The type for the position is a restricted string type which allows only four different values : goalkeeper, defender, midfielder and forward.</xs:documentation>
+            </xs:annotation>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="goalkeeper"/>
+              <xs:enumeration value="defender"/>
+              <xs:enumeration value="midfielder"/>
+              <xs:enumeration value="forward"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!-- 3.4. coachType extends personType -->
+  <xs:complexType name="coachType">
+    <xs:annotation>
+      <xs:documentation>This type represents a coach. It also inherits the information of the personType type. It adds the service date information.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="personType">
+        <xs:sequence>
+          <xs:element name="servicedate" type="serviceDateType" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!-- 3.5. matchOfficialType extends personType -->
+  <xs:complexType name="matchOfficialType">
+    <xs:annotation>
+      <xs:documentation>This type represents a match official. It inherits the information of the personType type but adds the service date information, the origin and an ID.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="personType">
+        <xs:sequence>
+          <xs:element name="servicedate" type="serviceDateType" minOccurs="0"/>
+          <xs:element name="origin" type="nameType"/>
+        </xs:sequence>
+        <xs:attribute name="officialId" type="xs:positiveInteger" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!-- 3.6. teamType-->
+  <xs:complexType name="teamType">
+    <xs:annotation>
+      <xs:documentation>This type represents a team. It contains at least eleven players, a coach and information about the country, the captain and the anthem.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="player" type="playerType" minOccurs="11" maxOccurs="21"/>
+      <xs:element name="coach" type="coachType"/>
+    </xs:sequence>
+    <xs:attribute name="country" type="nameType" use="required"/>
+    <xs:attribute name="captain" type="xs:positiveInteger" use="required"/>
+    <xs:attribute name="anthem" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <!-- 3.7. groupType -->
+  <xs:complexType name="groupType">
+    <xs:annotation>
+      <xs:documentation>This type defines the structure of a group : four teams.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="team" type="teamType" minOccurs="4" maxOccurs="4">
+        <!-- unicité des id des joueurs dans une équipe => pour référencer le capitaine -->
+        <xs:key name="playersOfTheTeamKey">
+          <xs:annotation>
+            <xs:documentation>This key verifies the uniqueness of the player's ID in one team. In fact, it is usefull to refer the captain of the team.</xs:documentation>
+          </xs:annotation>
+          <xs:selector xpath="player"/>
+          <xs:field xpath="@id"/>
+        </xs:key>
+        <xs:keyref name="playersOfTheTeamKeyRef" refer="playersOfTheTeamKey">
+          <xs:annotation>
+            <xs:documentation>This refers a player in the current team as the captain.</xs:documentation>
+          </xs:annotation>
+          <xs:selector xpath="."/>
+          <xs:field xpath="@captain"/>
+        </xs:keyref>
+        <!-- unicité des numéros de maillot dans une équipe -->
+        <xs:key name="numberPlayersInTeamKey">
+          <xs:annotation>
+            <xs:documentation>Another constraint is that every player of a team must have a different number (on his t-shirt).</xs:documentation>
+          </xs:annotation>
+          <xs:selector xpath="player"/>
+          <xs:field xpath="@number"/>
+        </xs:key>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="letter" type="letterType" use="required"/>
+  </xs:complexType>
+  <!-- 3.8. stadiumType -->
+  <xs:complexType name="stadiumType">
+    <xs:annotation>
+      <xs:documentation>This type represents a stadium. It has the following information : the country and the city to locate the stadium, the name, the number of seats, the construction date and of course an ID.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="country" type="nameType"/>
+      <xs:element name="city" type="nameType"/>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="seats" type="xs:positiveInteger"/>
+      <xs:element name="constructiondate">
+        <xs:annotation>
+          <xs:documentation>The construction date is restricted to be between 1900 and 2008. Matchs won't be played in a too old stadium.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:positiveInteger">
+            <xs:minInclusive value="1900"/>
+            <xs:maxInclusive value="2008"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="stadiumId" type="xs:positiveInteger" use="required"/>
+  </xs:complexType>
+  <!-- 3.9. matchType -->
+  <xs:complexType name="matchType">
+    <xs:annotation>
+      <xs:documentation>This type represents a match. A match contains two references to two teams, and specifies the result for each one. This type contains also information about the date and time and has an ID.. This type refers also one stadium and one match official.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="team1" type="teamForMatchType"/>
+      <xs:element name="team2" type="teamForMatchType"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>For a match, we can have an unbounded number of goals, red or yellow cards.</xs:documentation>
+        </xs:annotation>
+        <xs:element name="goal">
+          <xs:complexType>
+            <xs:attributeGroup ref="actionGroup"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="red">
+          <xs:complexType>
+            <xs:attributeGroup ref="actionGroup"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="yellow">
+          <xs:complexType>
+            <xs:attributeGroup ref="actionGroup"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="matchId" type="xs:positiveInteger" use="required"/>
+    <xs:attribute name="date" type="xs:dateTime" use="required"/>
+    <xs:attribute name="official" type="xs:positiveInteger" use="required"/>
+    <xs:attribute name="stadium" type="xs:positiveInteger" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="teamForMatchType">
+    <xs:annotation>
+      <xs:documentation>This type allows to specify information the two teams in a match.</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="country" type="nameType" use="required"/>
+    <xs:attribute name="score" use="optional" default="-1">
+      <xs:simpleType>
+        <xs:annotation>
+          <xs:documentation>The result is an integer greater or equal than -1. If the match has not already happened, the result value will be -1.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:integer">
+          <xs:minInclusive value="-1"/>
+          <!-- we use -1 if the match hasn't already happened -->
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+</xs:schema>

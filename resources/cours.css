@@ -1,0 +1,121 @@
+div.background {
+  height: 3.1em;  
+}
+div.slide > h1 {
+margin: -0.05em 0 0;
+padding: 0.1em 3em 0 3em;
+}
+strong {
+  color: #0000CC;
+}
+ul.sublist li {
+  font-style: normal; /* overwrites slidy */
+  margin-bottom: 0.25em;
+}
+ul li {
+  margin-bottom: 1em;
+}
+li > p {
+  margin-left: 0;
+  margin-bottom: 0.25em;
+}
+li > p, li > ul {
+  margin-top: 0.25em;
+}
+div.image {
+  text-align: center;
+}
+p.legend {
+  margin: 0;
+  font-style: italic;
+  color: #666;
+}
+ul.plain > li{
+  list-style-type: none;
+  background: none;
+}
+ul.plain {
+  margin-left: 0;
+}
+p + div.mask {
+  margin-top: 0.5em;
+}
+/* copied from slidy pre */
+div.pre {
+ font-size: 80%;
+ padding-top: 0.2em;
+ padding-bottom: 0.2em;
+ padding-left: 1em;
+ padding-right: 1em;
+ border-style: solid;
+ border-left-width: 1em;
+ border-top-width: thin;
+ border-right-width: thin;
+ border-bottom-width: thin;
+ border-color: #95ABD0;
+ /*background-color: #E4E5E7;*/
+}
+div.pre, pre {
+  clear: both;
+}
+ul h2, ul h3 {
+  margin-left: 0;
+}
+div.mask {
+  position: relative;
+}
+div.mask:hover div.commands {
+  display: block;
+}
+div.commands {
+  position: absolute;
+  right: 10px;
+  top: -20px;
+  display:none;
+  z-index: 1000;
+}
+/*** Illustration ***/
+div.illustration {
+  position: relative;
+}
+div.illustration:hover a.e-link {
+  display: block;
+}
+a.e-link {
+  display: none;
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  display; none;
+}
+/*** Item numbering ***/
+ul.block {
+  margin: 0.5em 1.5em;
+  padding: 0 0 0 1.5em;
+}
+ul.block > li {
+  padding: 0;
+}
+ul.block.bullet {
+  padding: 0;
+} 
+ul.block.none {
+  padding-left: 0;
+}
+ul.block.none > li {
+  background: none;
+  list-style: none outside none;
+}
+ul.block.bullet > li {
+  padding-left: 1.5em; /* leaves place for background bullet */
+}
+ul.block.decimal > li {
+  background: none;
+  list-style: decimal outside none;
+}
+ul.block.roman > li {
+  list-style: upper-roman outside none;
+}
+ul.block.latin > li {
+  list-style: upper-latin outside none;
+}

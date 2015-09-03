@@ -1,0 +1,652 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
+      xml:lang="fr">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+      <meta name="copyright"
+            content="Tutorial Web application development with XML © S. Sire - Oppidoc pour DocEng 2015 (generated 02/09/2015)"/>
+      <title>Tutorial Web application development with XML</title>
+      <link rel="stylesheet"
+            type="text/css"
+            media="screen, projection, print"
+            href="resources/Slidy2/styles/slidy.css"/>
+      <link rel="stylesheet"
+            type="text/css"
+            media="screen, projection, print"
+            href="resources/Slidy2/styles/w3c-blue.css"/>
+      <link rel="stylesheet"
+            type="text/css"
+            media="screen, projection, print"
+            href="resources/cours.css"/>
+      <script src="resources/Slidy2/scripts/slidy.js"
+              charset="utf-8"
+              type="text/javascript">//</script>
+      <script src="resources/jquery/js/jquery-1.7.1.min.js">//</script>
+      <script src="resources/ace-builds-master/src-noconflict/ace.js"
+              type="text/javascript"
+              charset="utf-8">//</script>
+      <script>
+          (function () {
+            function doScaleText ( e, incr ) {
+              var mask = $(e.target).closest('.mask'),
+                  pre = mask.find('pre'),
+                  size, m, nsize;
+              if (pre.length === 0) {
+                pre = mask.find('div.pre');
+              }
+              size = pre.css('font-size') || '20';
+              m = size.match(/(\d+)/);
+              nsize = (m) ? parseInt(m) : 20;
+              pre.css('font-size', (nsize + incr) + 'px');
+            };
+            function doColorize ( e ) {
+              var root = $(e.target).closest('.mask'),
+                  pre = root.find('pre'),
+                  lines = pre.contents(),
+                  size = pre.css('font-size') || '20px',
+                  t = root.append('&lt;div class="pre"/&gt;').find('div.pre').get(0),
+                  language = pre.attr('data-language');
+              lines.each(function(i,e){t.appendChild(e)});
+              pre.remove();
+              $(t).css('font-size', size);
+              editor = ace.edit(t);
+              editor.setOptions({
+                    readOnly: true,
+                    highlightActiveLine: false,
+                    highlightGutterLine: false,
+                    maxLines: Infinity
+              });
+              editor.setTheme("ace/theme/textmate");
+              editor.getSession().setMode("ace/mode/" + language);
+              // $(e.target).css('z-index', 0);
+              $(e.target).hide();
+            };
+            function init() {
+              $('div.commands &gt; button[data-command="ace"]').click( doColorize );
+              $('div.commands &gt; button[data-command="text-in"]').click( function (e) { doScaleText(e,2) } );
+              $('div.commands button[data-command="text-out"]').click( function (e) { doScaleText(e,-2) } );
+            };
+            jQuery(init);
+          }());
+      </script>
+   </head>
+   <body>
+      <div class="background"/>
+      <div class="slide">
+         <h1>Application Architecture</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>XML database programming fully compatible with RESTful archictural style</p>
+               </li>
+               <li>
+                  <p>Representational State Transfer (REST)</p>
+                  <p>
+                     <em>Architecture Styles and the Design of Network-Based Software Architectures</em>
+                  </p>
+                  <p>Roy Fielding (<a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm"
+                        target="_blank">doctoral thesis</a>, 2000)</p>
+               </li>
+               <li>
+                  <p>Constraints on application design and  use of HTTP</p>
+                  <p/>
+                  <ul class="sublist">
+                     <li>URL input space to map nested resources</li>
+                     <li>uniform application of HTTP verbs with the CRUD semantic</li>
+                  </ul>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Simplicity of REST</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>REST resources and actions map directly to web application URLs</p>
+               </li>
+               <li>
+                  <p>No need for extra protocol layers as in SOAP (or XML-RPC)</p>
+                  <p>Exemple</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="ace">Ace</button>
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre data-language="xml">&lt;?xml version="1.0"?&gt;
+&lt;soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+      soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"&gt;
+  &lt;soap:Header&gt;...&lt;/soap:Header&gt;
+  &lt;soap:Body&gt;
+    &lt;m:GetPrice xmlns:m="http://www.exemple.com/prices"&gt;
+      &lt;m:Product&gt;Apple&lt;/m:Product&gt;
+    &lt;/m:GetPrice&gt;
+    &lt;soap:Fault&gt;
+    ...
+    &lt;/soap:Fault&gt;
+  &lt;/soap:Body&gt;
+&lt;/soap:Envelope&gt;</pre>
+                  </div>
+                  <p>To be compared with REST version</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre>GET /products/apple/price</pre>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>REST building blocks</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Resources</p>
+                  <p>Hold all states and functionalities of an application</p>
+                  <p>Addressable as names (ex: <tt>/orders/830428/items/8</tt>)</p>
+               </li>
+               <li>
+                  <p>Actions</p>
+                  <p>HTTP verbs (GET, POST, PUT, DELETE)</p>
+               </li>
+               <li>
+                  <p>Application design  mantra : <strong>give a name to things</strong>
+                  </p>
+                  <p>
+                     <em>and define hierarchies of things</em>
+                  </p>
+               </li>
+               <li>
+                  <p>Every action on a ressource returns a representation</p>
+                  <p>Representation can be selected by the URL suffix (<tt>.json, .xml, .text</tt>)</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Uniform Interface (CRUD)</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>CRUD (Create, Read, Update, Delete) database semantic</p>
+               </li>
+               <li>
+                  <p>Actions without side effect</p>
+                  <p>
+                     <tt>GET</tt>
+                  </p>
+               </li>
+               <li>
+                  <p>Actions with side effect</p>
+                  <p>
+                     <tt>POST</tt>
+                  </p>
+               </li>
+               <li>
+                  <p>Actions with side effect and idempotent</p>
+                  <p>
+                     <tt>PUT</tt>
+                  </p>
+                  <p>
+                     <tt>DELETE</tt>
+                  </p>
+               </li>
+               <li>
+                  <p>Interactions invariant to state (<em>REST is stateless</em>)</p>
+                  <p>Execution context fully define in request elements (URL string, request headers, request body)</p>
+                  <p>Result independant of previous interactions</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Each action returns a status</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>HTTP pre-defined status cover wide spectrum of situations</p>
+               </li>
+               <li>
+                  <p>
+                     <strong>200 OK</strong> : success</p>
+               </li>
+               <li>
+                  <p>
+                     <strong>201 Created</strong> :  PUT or POST success</p>
+               </li>
+               <li>
+                  <p>
+                     <strong>400 Bad Request</strong> : malformed request</p>
+                  <p>
+                     <em>e.g. POST invalid parameters</em>
+                  </p>
+               </li>
+               <li>
+                  <p>
+                     <strong>404 Not Found</strong> : no resource at URL</p>
+               </li>
+               <li>
+                  <p>
+                     <strong>401 Unauthorized</strong> : identification required</p>
+               </li>
+               <li>
+                  <p>
+                     <strong>405 Method Not Allowed</strong> : unsupported action on resource</p>
+               </li>
+               <li>
+                  <p>
+                     <strong>409 Conflict</strong> : request execution would result in a conflic</p>
+                  <p>
+                     <em>e.g. lost copy in wiki </em>
+                  </p>
+               </li>
+               <li>
+                  <p>
+                     <strong>500 Internal Server Error</strong> : server side failure</p>
+                  <p>
+                     <em>e.g. XQuery runtime error exception with eXist-DB</em>
+                  </p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Exercise</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>
+                     <a href="exercises/exercise1/formulation.html" target="_blank">Formulation</a>
+                  </p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>XML database structure</h1>
+         <div class="region" style="float:left;width:49%">
+            <ul class="block none">
+               <li>
+                  <div class="illustration">
+                     <img src="images/relationnel.png" style="width:80%"/>
+                     <p class="legend">Relational data model</p>
+                  </div>
+               </li>
+            </ul>
+         </div>
+         <div class="region" style="float:left">
+            <ul class="block none">
+               <li>
+                  <div class="illustration">
+                     <img src="images/hierarchique.png" style="width:80%"/>
+                     <p class="legend">Hierarchical data model</p>
+                  </div>
+               </li>
+            </ul>
+         </div>
+         <div class="region" style="clear:left">
+            <ul class="block bullet">
+               <li>
+                  <p>Every collection and document is identified by a URI</p>
+                  <p>Typically it consists of its access path separated by <tt>/</tt>
+                  </p>
+               </li>
+               <li>
+                  <p>Exemples</p>
+                  <ul class="sublist">
+                     <li>
+                        <tt>/db/www/pages/posts</tt>
+                     </li>
+                     <li>
+                        <tt>/db/wines/bordeaux/producers.xml</tt>
+                     </li>
+                  </ul>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Application of REST to XML database</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>First straightforward interpretation</p>
+                  <ul class="sublist">
+                     <li>every REST resource corresponds to a database resource</li>
+                     <li>database supports GET / PUT / POST / DELETE</li>
+                     <li>by extension GET of an XQuery script executes it and returns its result</li>
+                     <li>classical REST interface to eXist-DB</li>
+                  </ul>
+               </li>
+               <li>
+                  <p>Second interpretation</p>
+                  <ul class="sublist">
+                     <li>indirection between REST resource and database resource</li>
+                     <li>decoding layer to analyze URL and select database action</li>
+                     <li>URL rewrite interface to eXist-DB</li>
+                  </ul>
+               </li>
+               <li>
+                  <p>Third interpretation</p>
+                  <ul class="sublist">
+                     <li>RESTXQ</li>
+                  </ul>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Challenge of URL rewriting</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>How to expose an application with RESTful URLs ?</p>
+                  <p>
+                     <em>For instance</em> : <tt>/wines/blason-d-issan/2006</tt>
+                  </p>
+               </li>
+               <li>
+                  <p>While organizing code at your convenience ?</p>
+                  <p>
+                     <em>For instance</em> : <tt>/applications/cave.xql?millesime=2006&amp;vin=blason-d-issan</tt>
+                  </p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>URL Rewriting</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Defines one or more entry points into your application</p>
+                  <ul class="sublist">
+                     <li>with <tt>controller.xql</tt> XQuery scripts</li>
+                  </ul>
+               </li>
+               <li>
+                  <p>Handles and filters every incoming HTTP request</p>
+                  <ul class="sublist">
+                     <li>can add, delete or rewrite request parameters</li>
+                     <li>can add, delete request attributes</li>
+                  </ul>
+               </li>
+               <li>
+                  <p>Generates and forwards execution to a pipeline</p>
+                  <ul class="sublist">
+                     <li>written in an eXist-DB specific XML idioms</li>
+                  </ul>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Pipeline types</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Unreference a resource</p>
+               </li>
+               <li>
+                  <p>Explicit redirection to another URL</p>
+               </li>
+               <li>
+                  <p>Executes an XQuery script and returns its output</p>
+               </li>
+               <li>
+                  <p>Execute a combination of XQuery / XSLT scripts</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Unreference a resource</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>The <tt>ignore</tt> pipeline root element causes normal URL handling (no rewriting)</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="ace">Ace</button>
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre data-language="xml">&lt;ignore xmlns="http://exist.sourceforge.net/NS/exist"&gt;
+  &lt;cache-control cache="no"/&gt;
+&lt;/ignore&gt;</pre>
+                  </div>
+               </li>
+               <li>
+                  <p>Unreferences the URL path and returns the resource if it exists or a 404</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Explicit redirection</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Visible by end-user in the address bar</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="ace">Ace</button>
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre data-language="xml">&lt;dispatch xmlns="http://exist.sourceforge.net/NS/exist"&gt;
+   &lt;redirect url="index.xml"/&gt;
+&lt;/dispatch&gt;</pre>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Invisible redirection</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>Not visible because it happens server-side before returning the response</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="ace">Ace</button>
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre data-language="xml">&lt;dispatch xmlns="http://exist.sourceforge.net/NS/exist"&gt;
+  &lt;forward url="/projets/cave/cave.xql"&gt;
+    &lt;add-parameter name="vin" value="{$params[1]}"/&gt;
+    &lt;add-parameter name="millesime" value="{$params[2]}"/&gt;
+    &lt;add-parameter name="cible" value="notes"/&gt;
+  &lt;/forward&gt;
+&lt;/dispatch&gt;</pre>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Model-view example</h1>
+         <div class="region">
+            <ul class="block none">
+               <li>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="ace">Ace</button>
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre data-language="xml">&lt;dispatch xmlns="http://exist.sourceforge.net/NS/exist"&gt;
+  &lt;forward url="/projets/oppidum/actions/read.xql"&gt;
+    &lt;set-header name="Cache-Control" value="no-cache"/&gt;
+    &lt;set-header name="Pragma" value="no-cache"/&gt;
+  &lt;/forward&gt;
+  &lt;view&gt;
+    &lt;forward servlet="XSLTServlet"&gt;
+      &lt;set-attribute name="xslt.stylesheet" value="/projets/tutorial/views/page.xsl"/&gt;
+      &lt;set-attribute name="xslt.rights" value="modifier POST"/&gt;      
+      &lt;set-attribute name="xslt.base-url" value="/exist/projets/tutorial/"/&gt;
+      &lt;set-attribute xmlns="" name="xslt.lang" value="fr"/&gt;
+    &lt;/forward&gt;
+    &lt;forward url="/projets/tutorial/epilogue.xql"/&gt;
+  &lt;/view&gt;
+  &lt;cache-control cache="false"/&gt;
+&lt;/dispatch&gt;</pre>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Practical Simplification</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>The 3 steps universal pipeline</p>
+                  <div class="illustration" style="text-align:center">
+                     <img src="images/universal-pipeline.png" style="width:25%"/>
+                  </div>
+               </li>
+               <li>
+                  <p>Generate all pages with such pipelines</p>
+               </li>
+               <li>
+                  <p>This opens door to simplification of pipeline generation through a Domain Specific Language (DSL)</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Oppidum framework</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>A unique XML file represents the application architecture</p>
+                  <div class="illustration">
+                     <img src="images/oppidum-principles.png" style="width:100%"/>
+                     <p class="legend">the mapping associates each REST resource from the application with a rendering pipeline</p>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Oppidum execution model</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>a two time engine</p>
+                  <div class="illustration">
+                     <img src="images/oppidum-execution.png" style="width:100%"/>
+                  </div>
+               </li>
+               <li>
+                  <p>eXist-DB implementation</p>
+                  <ul class="sublist">
+                     <li>1st step : controller.xql calls gen:process( HTTP Request )</li>
+                     <li>2nd step: URL Rewrite executes pipeline</li>
+                  </ul>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="slide">
+         <h1>Sample Mapping</h1>
+         <div class="region">
+            <ul class="block bullet">
+               <li>
+                  <p>The POLL application</p>
+                  <div class="mask">
+                     <div class="commands">
+                        <button data-command="ace">Ace</button>
+                        <button data-command="text-in">T▲</button>
+                        <button data-command="text-out">T▼</button>
+                     </div>
+                     <pre data-language="xml" style="font-size:12px">&lt;!-- ======================================================================
+                              Oppidoc POLL mapping
+     ====================================================================== --&gt;
+&lt;site db="/db/sites/poll" confbase="/db/www/poll" startref="about" supported="login logout" key="poll" mode="dev" languages="en" default="en"&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;!-- **      orders      ** --&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;collection name="orders" epilogue="home" method="POST"&gt;
+    &lt;access&gt;
+      &lt;rule action="GET" role="g:poll" message="poll manager"/&gt;
+      &lt;rule action="POST" role="all"/&gt;
+    &lt;/access&gt;
+    &lt;model src="modules/poll/admin.xql"/&gt;
+    &lt;view src="modules/poll/admin.xsl"/&gt;
+    &lt;action name="POST"&gt;
+      &lt;model src="modules/poll/orders.xql"/&gt;
+    &lt;/action&gt;
+  &lt;/collection&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;!-- **       forms      ** --&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;collection name="forms"&gt;
+    &lt;item epilogue="home"&gt;
+      &lt;model src="modules/poll/run.xql"/&gt;
+      &lt;view src="modules/poll/run.xsl"/&gt;
+    &lt;/item&gt;
+  &lt;/collection&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;!-- **     answers      ** --&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;collection name="answers"&gt;
+    &lt;item method="POST"&gt;
+      &lt;model src="modules/poll/read.xql"/&gt;
+      &lt;action name="POST"&gt;
+        &lt;model src="modules/poll/write.xql"/&gt;
+      &lt;/action&gt;
+    &lt;/item&gt;
+  &lt;/collection&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;!-- **  questionnaires  ** --&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;collection name="questionnaires" method="POST"&gt;
+    &lt;action name="POST"&gt;
+      &lt;model src="modules/poll/questionnaires.xql"/&gt;
+    &lt;/action&gt;
+    &lt;!-- You MUST manually create one entry per Questionnaire --&gt;
+    &lt;!-- TODO: implement epilogue="$2.xhtml" in Oppidum --&gt;
+    &lt;item name="sample" epilogue="sample.xhtml"&gt;
+      &lt;model src="modules/poll/questionnaire.xql"/&gt;
+      &lt;view src="modules/poll/questionnaire.xsl"/&gt;
+    &lt;/item&gt;
+  &lt;/collection&gt;
+  &lt;!-- ****************** --&gt;
+  &lt;!-- **  guidelines  ** --&gt;
+  &lt;!-- ****************** --&gt;
+  &lt;item name="about" epilogue="home" resource="file:///views/about.xml"&gt;
+    &lt;access&gt;
+      &lt;rule action="GET" role="all"/&gt;
+    &lt;/access&gt;
+  &lt;/item&gt;
+  &lt;!-- **************** --&gt;
+  &lt;!-- **  loopback  ** --&gt;
+  &lt;!-- **************** --&gt;
+  &lt;item name="loopback" method="POST"&gt;
+    &lt;action name="POST"&gt;
+      &lt;model src="modules/poll/loopback.xql"/&gt;
+    &lt;/action&gt;
+  &lt;/item&gt;
+  &lt;!-- *************************************** --&gt;
+  &lt;!-- **              test                 ** --&gt;
+  &lt;!-- **  (REMOVE from production server)  ** --&gt;
+  &lt;!-- *************************************** --&gt;
+  &lt;item name="test"&gt;
+    &lt;item resource="file:///:self"/&gt;
+  &lt;/item&gt;
+&lt;/site&gt;</pre>
+                  </div>
+               </li>
+            </ul>
+         </div>
+      </div>
+   </body>
+</html>

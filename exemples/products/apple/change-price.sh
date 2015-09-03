@@ -1,0 +1,1 @@
+curl -X PUT  "http://localhost:9191/exist/rest/tutorial/products/apple/price.xml"  -H "Content-Type: application/xml" --data $"@price-$1.xml"

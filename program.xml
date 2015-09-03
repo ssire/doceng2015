@@ -1,0 +1,143 @@
+<SlideShow>
+  <Slides>
+    <Slide>
+      <Title>DocEng 2015 Half-day Tutorial</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="none">
+          <Item>
+            <Title>Developing web applications with document technologies and enjoying it !</Title>
+          </Item>
+        </Block>
+      </Region>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="none">
+          <Item>
+            <Para>
+              <Fragment>Par Stéphane Sire</Fragment>
+            </Para>
+            <Para>
+              <Link>
+                <LinkText>Oppidoc</LinkText>
+                <LinkRef>http://www.oppidoc.fr</LinkRef>
+              </Link>
+            </Para>
+          </Item>
+        </Block>
+        <Block Numbering="none">
+          <Item>
+            <Illustration Source="images/minion.jpg">
+              <Meta>
+                <Width>50</Width>
+                <Alignment>center</Alignment>
+              </Meta>
+            </Illustration>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Program</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="none">
+          <Item>
+            <Title>14:00-14:30 Welcome and Demonstrations</Title>
+          </Item>
+          <Item>
+            <Title>14:30-15:30 Restful Application Design and XML</Title>
+            <Para>
+              <Fragment>A look at </Fragment>
+              <Link>
+                <LinkText>application architecture</LinkText>
+                <LinkRef>./architecture.xhtml</LinkRef>
+              </Link>
+              <Fragment> and its reflection into an XML language for mapping incoming HTTP requests to simple pipelines.</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Title>15:30-16:00 Coffee Break</Title>
+          </Item>
+          <Item>
+            <Title>16:00-16:45 Hands on eXist-DB</Title>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Bring your laptop and we'll guide you step by step to </Fragment>
+              <Link>
+                <LinkText>install and configure</LinkText>
+                <LinkRef>./install-and-configure.xhtml</LinkRef>
+              </Link>
+              <Fragment> eXist-DB and to generate your first pages.</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Title>16:45-17:30 Good Practices for Full-XML Stack Development</Title>
+            <Para>
+              <Fragment>A look at </Fragment>
+              <Link>
+                <LinkText>data, code organization and good practices</LinkText>
+                <LinkRef>./practices.xhtml</LinkRef>
+              </Link>
+              <Fragment> to make the most out of the XQuery and XSLT language combination.</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Credits</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Courseware written in XML</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>Slides player with </Fragment>
+                <Link>
+                  <LinkText>slidy</LinkText>
+                  <LinkRef>http://www.w3.org/Talks/Tools/Slidy2/</LinkRef>
+                </Link>
+                <Fragment> (W3C)</Fragment>
+              </Item>
+              <Item>
+                <Fragment>XSLT transformation to XHTML with </Fragment>
+                <Link>
+                  <LinkText>saxon</LinkText>
+                  <LinkRef>http://www.saxonica.com/</LinkRef>
+                </Link>
+              </Item>
+            </SubList>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>XML source written with the </Fragment>
+              <Link>
+                <LinkText>AXEL</LinkText>
+                <LinkRef>http://ssire.github.io/axel/</LinkRef>
+              </Link>
+              <Fragment> javascript library (Adaptable XML Editing Library)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Syntatic coloration of code examples with </Fragment>
+              <Link>
+                <LinkText>Ace</LinkText>
+                <LinkRef>http://ace.c9.io/</LinkRef>
+              </Link>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+  </Slides>
+</SlideShow>

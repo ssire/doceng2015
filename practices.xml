@@ -1,0 +1,765 @@
+<SlideShow>
+  <Slides>
+    <Slide>
+      <Title>XML Full-stack Good Practices</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="decimal">
+          <Item>
+            <Para>
+              <Fragment>Code and Data Organization</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>A universal Pipeline for Page Templating</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Domain Specific Languages Everywhere</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Composite Page</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>CRUD Controllers</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>More Patterns</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Genesis</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>These patterns were born from our practice with the </Fragment>
+              <Link>
+                <LinkText>Oppidum XQuery web application framework</LinkText>
+                <LinkRef>http://www.github.com/ssire/oppidum</LinkRef>
+              </Link>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>To install Oppidum :</Fragment>
+            </Para>
+            <Code>
+              <Source>mkdir -p EXIST_HOME/webapp/projects
+cd EXIST_HOME/webapp/projects
+git clone https://github.com/ssire/oppidum.git # no SSH key configured
+git clone git@github.com:ssire/oppidum.git # SH Key configured
+cd oppidum/scripts
+./bin/boostrap.sh {your-admin-password}
+open http://localhost:8080/exist/projects/oppidum</Source>
+              <Meta>
+              </Meta>
+            </Code>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>NOTE: </Fragment>
+              <Fragment FragmentKind="emphasize">currently Oppidum does not run on native Windows eXist-DB installation because of path character (to be fixed soon)</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Database collections</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>By default eXist-DB contains the following collections</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment FragmentKind="verbatim">/db</Fragment>
+              </Item>
+              <Item>
+                <Fragment FragmentKind="verbatim">/db/system</Fragment>
+              </Item>
+              <Item>
+                <Fragment FragmentKind="verbatim">/db/system/config</Fragment>
+              </Item>
+              <Item>
+                <Fragment FragmentKind="verbatim">/db/apps</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Proposed Conventions</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>We use these conventions with the Oppidum framework</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Separate Application users data from Application configuration data</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment FragmentKind="verbatim">/db/sites/{application}</Fragment>
+              </Item>
+              <Item>
+                <Fragment FragmentKind="verbatim">/db/www/{application}/config</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Decide a place for Application code</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>under </Fragment>
+                <Fragment FragmentKind="verbatim">EXIST_HOME/webapp/{extra level}/{application}</Fragment>
+                <Fragment> in file system</Fragment>
+              </Item>
+              <Item>
+                <Fragment>under </Fragment>
+                <Fragment FragmentKind="verbatim">/db/www/{application}</Fragment>
+                <Fragment> in database</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>File System vs Database Debate</Title>
+      <Region>
+        <Meta>
+          <Float>left</Float>
+          <Width>49</Width>
+        </Meta>
+        <Block Numbering="none">
+          <Item>
+            <Title>File System</Title>
+          </Item>
+        </Block>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>direct integration with distributed version control systems like Git</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>direct compatibility with source code editors (EMACS, TextMate, etc)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>direct server deployment with Git</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>relies on XQueryServlet to execute XQuery from files system</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+      <Region>
+        <Meta>
+          <Float>left</Float>
+          <Width>49</Width>
+        </Meta>
+        <Block Numbering="none">
+          <Item>
+            <Title>Database</Title>
+          </Item>
+        </Block>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>direct integration with XML programming environments (eXide, Oxygen)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>indirect compatibility with source code editors with webDAV</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>indirect deployment through packaging as XAR bundle archives</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>XQueryServlet may be deprecated</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="emphasize">Git integration in progress ?</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+      <Region>
+        <Meta>
+          <Clear>left</Clear>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>The decision depends on your development habits</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Debate is not over but eXist-DB team seems to privilege second option...</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Page Templating System</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="none">
+          <Item>
+            <Code>
+              <Source>&lt;html xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:site="http://oppidoc.com/oppidum/site"&gt;
+  &lt;body&gt;
+    &lt;div id="article"&gt;
+      &lt;site:content/&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</Source>
+              <Meta>
+                <Language>xml</Language>
+              </Meta>
+            </Code>
+          </Item>
+        </Block>
+        <Block Numbering="none">
+          <Item>
+            <Illustration Source="images/oppidum-mesh.png">
+              <Meta>
+                <Width>100</Width>
+              </Meta>
+            </Illustration>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Sample Flow</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Model output</Fragment>
+            </Para>
+            <Code>
+              <Source>&lt;Document&gt;
+  &lt;Parag&gt;Hello World&lt;/Parag&gt;
+&lt;/Document&gt;</Source>
+              <Meta>
+                <Language>xml</Language>
+              </Meta>
+            </Code>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>View Output</Fragment>
+            </Para>
+            <Code>
+              <Source>&lt;site:view&gt;
+  &lt;site:content&gt;
+    &lt;p&gt;Hello World&lt;/p&gt;
+  &lt;/site:content&gt;
+&lt;/site:view&gt;</Source>
+              <Meta>
+                <Language>xml</Language>
+              </Meta>
+            </Code>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Epilogue Output</Fragment>
+            </Para>
+            <Code>
+              <Source>&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+  &lt;body&gt;
+    &lt;div id="article"&gt;
+      &lt;p&gt;Hello World&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</Source>
+              <Meta>
+                <Language>xml</Language>
+              </Meta>
+            </Code>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Page Templating Example</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Form feedback </Fragment>
+              <Link>
+                <LinkText>about</LinkText>
+                <LinkRef>http://localhost:9191/exist/projects/poll/about</LinkRef>
+              </Link>
+              <Fragment> page</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Simple (Model) ==&gt; (Epilogue) pipeline (Model output is already a View)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Epilogue does blend </Fragment>
+              <Fragment FragmentKind="verbatim">views/about.xml</Fragment>
+              <Fragment> (model output) into </Fragment>
+              <Fragment FragmentKind="verbatim">mesh/home.xhtml</Fragment>
+              <Fragment> (template file)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Rendering done by the </Fragment>
+              <Fragment FragmentKind="verbatim">local:render()</Fragment>
+              <Fragment> epilogue templating function</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Epilogue Templating Function</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Universal typeswitch function (cut-and-paste between projects) to include in the epilogue</Fragment>
+            </Para>
+            <Code>
+              <Source>declare function local:render( $cmd as element(), $source as element(),
+  $view as element()* ) as element()
+{
+  element { node-name($source) }
+  {
+    ...typeswitch function calling site:branch function
+       for every  site:* extension point...
+  }
+};</Source>
+              <Meta>
+                <Language>xml</Language>
+              </Meta>
+            </Code>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Application-dependent function defining the extension points</Fragment>
+            </Para>
+            <Code>
+              <Source>declare function site:branch( $cmd as element(), $source as element(),
+  $view as element()* ) as node()*
+{
+  typeswitch($source)
+  case element(site:skin) return site:skin($cmd, $view)
+  case element(site:lang) return site:lang($cmd, $view)
+  case element(site:navigation) return site:navigation($cmd, $view)
+  case element(site:error) return site:error($cmd, $view)
+  case element(site:login) return site:login($cmd)
+  ... (: default implicitly manages other modules :)
+  default return $view/*[local-name(.) = local-name($source)]/(*|text())
+};</Source>
+              <Meta>
+                <Language>xml</Language>
+              </Meta>
+            </Code>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Domain Specific Languages</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Turn Code into Data</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Very easy to implement with XQuery and/or XSLT</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Examples</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>forms generation languages (ex: feedback questionnaires)</Fragment>
+              </Item>
+              <Item>
+                <Fragment>view construction languages (ex: statistical graphs)</Fragment>
+              </Item>
+              <Item>
+                <Fragment>alerts list checking language</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Forms Generation Language</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>See a sample </Fragment>
+              <Link>
+                <LinkText>feedback questionnaire</LinkText>
+                <LinkRef>http://localhost:9191/exist/projects/poll/forms/azerty</LinkRef>
+              </Link>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Creation of a new questionnaire with </Fragment>
+              <Fragment FragmentKind="verbatim">POST /questionnaires</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Questionnaires are customizable with variables</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Generated questionnaires are themselves Pate Templates (see previous patterns)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Runtime Questionnaire rendering with </Fragment>
+              <Fragment FragmentKind="verbatim">GET /questionnaires/{name}?o=reference</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Feedback Questionnaire Architecture</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="none">
+          <Item>
+            <Illustration Source="images/poll-pipelines.png">
+              <Meta>
+                <Width>100</Width>
+              </Meta>
+            </Illustration>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Questionnaire Generation</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment FragmentKind="verbatim">POST /questionnaires</Fragment>
+              <Fragment> ... of  a &lt;Poll&gt; document</Fragment>
+            </Para>
+          </Item>
+        </Block>
+        <Block Numbering="none">
+          <Item>
+            <Illustration Source="images/poll-generation-pipeline.png">
+              <Meta>
+                <Width>100</Width>
+              </Meta>
+            </Illustration>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Customized Form Generation</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment FragmentKind="verbatim">GET /questionnaires/sample?o=azerty</Fragment>
+            </Para>
+          </Item>
+        </Block>
+        <Block Numbering="none">
+          <Item>
+            <Illustration Source="images/poll-feedback-pipeline.png">
+              <Meta>
+                <Width>100</Width>
+              </Meta>
+            </Illustration>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Composite Page Pattern</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Use client-side Javascript to combine several server-side pipelines to render a page</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Feedback questionnaire example</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>container page : </Fragment>
+                <Link>
+                  <LinkText>/forms/azerty</LinkText>
+                  <LinkRef>http://localhost:9191/exist/projects/poll/forms/azerty</LinkRef>
+                </Link>
+              </Item>
+              <Item>
+                <Fragment>formular loading : </Fragment>
+                <Link>
+                  <LinkText>/questionnaires/sample?o=azerty</LinkText>
+                  <LinkRef>http://localhost:9191/exist/projects/questionnaires/sample?o=azerty</LinkRef>
+                </Link>
+              </Item>
+              <Item>
+                <Fragment>data loading : </Fragment>
+                <Link>
+                  <LinkText>/answers/azerty</LinkText>
+                  <LinkRef>http://localhost:9191/exist/projects/poll/answers/azerty</LinkRef>
+                </Link>
+              </Item>
+            </SubList>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Debug tip for Oppidum</Fragment>
+            </Para>
+            <Code>
+              <Source>curl URL[.xml, .raw, .debug] | tidy -g- i -xml</Source>
+              <Meta>
+                <Language>sh</Language>
+              </Meta>
+            </Code>
+            <Para/>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Illustration</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="none">
+          <Item>
+            <Illustration Source="images/page-composition.png">
+              <Meta>
+                <Width>50</Width>
+                <Alignment>center</Alignment>
+              </Meta>
+            </Illustration>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>CRUD Controller Pattern</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Source file names and organization should reflect</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>Object / Document entities</Fragment>
+              </Item>
+              <Item>
+                <Fragment>actions on Objet / Document entities</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Two approaches</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>one file per action (create / read / delete / etc.)</Fragment>
+              </Item>
+              <Item>
+                <Fragment FragmentKind="important">group actions per Objet / Document entity in a single file</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>In any case code organization (incl. hierarchy) decoupled from URL space because of the mapping layer</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">a flat module hierarchy is sufficient in most cases</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>This is essential for maintainability</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>More Design Patterns</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Skinning applications</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">declarative way to keep the association between CSS and JS files and application pages into a skin.xml resource inside the database</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Error and message management (Flash a-la Ruby on Rails)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Data mapping</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">maintaining a relation between URL input space hierarchy and database collections hierarchy</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Form-based access control</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Development life cycle (mode="dev|test|prod")</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Further Readings</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>eXist - A NoSQL Document Database and Application Platform</Fragment>
+            </Para>
+            <Illustration Source="images/eXist.gif">
+              <Meta>
+                <Width>15</Width>
+                <Link>http://shop.oreilly.com/product/0636920026525.do</Link>
+              </Meta>
+            </Illustration>
+            <Para>
+              <Fragment>By Erik Siegel, Adam Retter (december 2014)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>The poll application is available on Github : </Fragment>
+              <Link>
+                <LinkText>http://www.github.com/ssire/poll</LinkText>
+                <LinkRef>http://www.github.com/ssire/poll</LinkRef>
+              </Link>
+            </Para>
+            <Code>
+              <Source>cd EXIST_HOME/webapp/projects
+git clone https://github.com/ssire/poll.git # no SSH key configured
+git clone git@github.com:ssire/poll.git # SH Key configured
+cd poll/scripts
+./bin/boostrap.sh {your-admin-password}
+open http://localhost:8080/exist/projects/poll</Source>
+              <Meta>
+              </Meta>
+            </Code>
+            <Para>
+              <Fragment>Pre-requisite : you must have installed Oppidum in projects directory too</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+  </Slides>
+</SlideShow>

@@ -1,0 +1,799 @@
+<SlideShow>
+  <Slides>
+    <Slide>
+      <Title>Application Architecture</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>XML database programming fully compatible with RESTful archictural style</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Representational State Transfer (REST)</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">Architecture Styles and the Design of Network-Based Software Architectures</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Roy Fielding (</Fragment>
+              <Link>
+                <LinkText>doctoral thesis</LinkText>
+                <LinkRef>http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm</LinkRef>
+              </Link>
+              <Fragment>, 2000)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Constraints on application design and  use of HTTP</Fragment>
+            </Para>
+            <Para/>
+            <SubList>
+              <Item>
+                <Fragment>URL input space to map nested resources</Fragment>
+              </Item>
+              <Item>
+                <Fragment>uniform application of HTTP verbs with the CRUD semantic</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Simplicity of REST</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>REST resources and actions map directly to web application URLs</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>No need for extra protocol layers as in SOAP (or XML-RPC)</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Exemple</Fragment>
+            </Para>
+            <Code>
+              <Source>&lt;?xml version="1.0"?&gt;
+&lt;soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+      soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"&gt;
+  &lt;soap:Header&gt;...&lt;/soap:Header&gt;
+  &lt;soap:Body&gt;
+    &lt;m:GetPrice xmlns:m="http://www.exemple.com/prices"&gt;
+      &lt;m:Product&gt;Apple&lt;/m:Product&gt;
+    &lt;/m:GetPrice&gt;
+    &lt;soap:Fault&gt;
+    ...
+    &lt;/soap:Fault&gt;
+  &lt;/soap:Body&gt;
+&lt;/soap:Envelope&gt;</Source>
+              <Meta>
+                <Language>xml</Language>
+              </Meta>
+            </Code>
+            <Para>
+              <Fragment>To be compared with REST version</Fragment>
+            </Para>
+            <Code>
+              <Source>GET /products/apple/price</Source>
+              <Meta>
+              </Meta>
+            </Code>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>REST building blocks</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Resources</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Hold all states and functionalities of an application</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Addressable as names (ex: </Fragment>
+              <Fragment FragmentKind="verbatim">/orders/830428/items/8</Fragment>
+              <Fragment>)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Actions</Fragment>
+            </Para>
+            <Para>
+              <Fragment>HTTP verbs (GET, POST, PUT, DELETE)</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Application design  mantra : </Fragment>
+              <Fragment FragmentKind="important">give a name to things</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">and define hierarchies of things</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Every action on a ressource returns a representation</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Representation can be selected by the URL suffix (</Fragment>
+              <Fragment FragmentKind="verbatim">.json, .xml, .text</Fragment>
+              <Fragment>)</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Uniform Interface (CRUD)</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>CRUD (Create, Read, Update, Delete) database semantic</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Actions without side effect</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="verbatim">GET</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Actions with side effect</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="verbatim">POST</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Actions with side effect and idempotent</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="verbatim">PUT</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="verbatim">DELETE</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Interactions invariant to state (</Fragment>
+              <Fragment FragmentKind="emphasize">REST is stateless</Fragment>
+              <Fragment>)</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Execution context fully define in request elements (URL string, request headers, request body)</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Result independant of previous interactions</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Each action returns a status</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>HTTP pre-defined status cover wide spectrum of situations</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="important">200 OK</Fragment>
+              <Fragment> : success</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="important">201 Created</Fragment>
+              <Fragment> :  PUT or POST success</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="important">400 Bad Request</Fragment>
+              <Fragment> : malformed request</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">e.g. POST invalid parameters</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="important">404 Not Found</Fragment>
+              <Fragment> : no resource at URL</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="important">401 Unauthorized</Fragment>
+              <Fragment> : identification required</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="important">405 Method Not Allowed</Fragment>
+              <Fragment> : unsupported action on resource</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="important">409 Conflict</Fragment>
+              <Fragment> : request execution would result in a conflic</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">e.g. lost copy in wiki </Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment FragmentKind="important">500 Internal Server Error</Fragment>
+              <Fragment> : server side failure</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">e.g. XQuery runtime error exception with eXist-DB</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Exercise</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Link>
+                <LinkText>Formulation</LinkText>
+                <LinkRef>exercises/exercise1/formulation.html</LinkRef>
+              </Link>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>XML database structure</Title>
+      <Region>
+        <Meta>
+          <Float>left</Float>
+          <Width>49</Width>
+        </Meta>
+        <Block Numbering="none">
+          <Item>
+            <Illustration Source="images/relationnel.png">
+              <Legend>
+                <Fragment>Relational data model</Fragment>
+              </Legend>
+              <Meta>
+                <Width>80</Width>
+              </Meta>
+            </Illustration>
+          </Item>
+        </Block>
+      </Region>
+      <Region>
+        <Meta>
+          <Float>left</Float>
+        </Meta>
+        <Block Numbering="none">
+          <Item>
+            <Illustration Source="images/hierarchique.png">
+              <Legend>
+                <Fragment>Hierarchical data model</Fragment>
+              </Legend>
+              <Meta>
+                <Width>80</Width>
+              </Meta>
+            </Illustration>
+          </Item>
+        </Block>
+      </Region>
+      <Region>
+        <Meta>
+          <Clear>left</Clear>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Every collection and document is identified by a URI</Fragment>
+            </Para>
+            <Para>
+              <Fragment>Typically it consists of its access path separated by </Fragment>
+              <Fragment FragmentKind="verbatim">/</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Exemples</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment FragmentKind="verbatim">/db/www/pages/posts</Fragment>
+              </Item>
+              <Item>
+                <Fragment FragmentKind="verbatim">/db/wines/bordeaux/producers.xml</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Application of REST to XML database</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>First straightforward interpretation</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>every REST resource corresponds to a database resource</Fragment>
+              </Item>
+              <Item>
+                <Fragment>database supports GET / PUT / POST / DELETE</Fragment>
+              </Item>
+              <Item>
+                <Fragment>by extension GET of an XQuery script executes it and returns its result</Fragment>
+              </Item>
+              <Item>
+                <Fragment>classical REST interface to eXist-DB</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Second interpretation</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>indirection between REST resource and database resource</Fragment>
+              </Item>
+              <Item>
+                <Fragment>decoding layer to analyze URL and select database action</Fragment>
+              </Item>
+              <Item>
+                <Fragment>URL rewrite interface to eXist-DB</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Third interpretation</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>RESTXQ</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Challenge of URL rewriting</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>How to expose an application with RESTful URLs ?</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">For instance</Fragment>
+              <Fragment> : </Fragment>
+              <Fragment FragmentKind="verbatim">/wines/blason-d-issan/2006</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>While organizing code at your convenience ?</Fragment>
+            </Para>
+            <Para>
+              <Fragment FragmentKind="emphasize">For instance</Fragment>
+              <Fragment> : </Fragment>
+              <Fragment FragmentKind="verbatim">/applications/cave.xql?millesime=2006&amp;vin=blason-d-issan</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>URL Rewriting</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Defines one or more entry points into your application</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>with </Fragment>
+                <Fragment FragmentKind="verbatim">controller.xql</Fragment>
+                <Fragment> XQuery scripts</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Handles and filters every incoming HTTP request</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>can add, delete or rewrite request parameters</Fragment>
+              </Item>
+              <Item>
+                <Fragment>can add, delete request attributes</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Generates and forwards execution to a pipeline</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>written in an eXist-DB specific XML idioms</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Pipeline types</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Unreference a resource</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Explicit redirection to another URL</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Executes an XQuery script and returns its output</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Execute a combination of XQuery / XSLT scripts</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Unreference a resource</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>The </Fragment>
+              <Fragment FragmentKind="verbatim">ignore</Fragment>
+              <Fragment> pipeline root element causes normal URL handling (no rewriting)</Fragment>
+            </Para>
+            <Code>
+              <Source>&lt;ignore xmlns="http://exist.sourceforge.net/NS/exist"&gt;
+  &lt;cache-control cache="no"/&gt;
+&lt;/ignore&gt;</Source>
+              <Meta>
+                <Language>xml</Language>
+              </Meta>
+            </Code>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Unreferences the URL path and returns the resource if it exists or a 404</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Explicit redirection</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Visible by end-user in the address bar</Fragment>
+            </Para>
+            <Code>
+              <Source>&lt;dispatch xmlns="http://exist.sourceforge.net/NS/exist"&gt;
+   &lt;redirect url="index.xml"/&gt;
+&lt;/dispatch&gt;</Source>
+              <Meta>
+                <Language>xml</Language>
+              </Meta>
+            </Code>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Invisible redirection</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>Not visible because it happens server-side before returning the response</Fragment>
+            </Para>
+            <Code>
+              <Source>&lt;dispatch xmlns="http://exist.sourceforge.net/NS/exist"&gt;
+  &lt;forward url="/projets/cave/cave.xql"&gt;
+    &lt;add-parameter name="vin" value="{$params[1]}"/&gt;
+    &lt;add-parameter name="millesime" value="{$params[2]}"/&gt;
+    &lt;add-parameter name="cible" value="notes"/&gt;
+  &lt;/forward&gt;
+&lt;/dispatch&gt;</Source>
+              <Meta>
+                <Language>xml</Language>
+              </Meta>
+            </Code>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Model-view example</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="none">
+          <Item>
+            <Code>
+              <Source>&lt;dispatch xmlns="http://exist.sourceforge.net/NS/exist"&gt;
+  &lt;forward url="/projets/oppidum/actions/read.xql"&gt;
+    &lt;set-header name="Cache-Control" value="no-cache"/&gt;
+    &lt;set-header name="Pragma" value="no-cache"/&gt;
+  &lt;/forward&gt;
+  &lt;view&gt;
+    &lt;forward servlet="XSLTServlet"&gt;
+      &lt;set-attribute name="xslt.stylesheet" value="/projets/tutorial/views/page.xsl"/&gt;
+      &lt;set-attribute name="xslt.rights" value="modifier POST"/&gt;      
+      &lt;set-attribute name="xslt.base-url" value="/exist/projets/tutorial/"/&gt;
+      &lt;set-attribute xmlns="" name="xslt.lang" value="fr"/&gt;
+    &lt;/forward&gt;
+    &lt;forward url="/projets/tutorial/epilogue.xql"/&gt;
+  &lt;/view&gt;
+  &lt;cache-control cache="false"/&gt;
+&lt;/dispatch&gt;</Source>
+              <Meta>
+                <Language>xml</Language>
+              </Meta>
+            </Code>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Practical Simplification</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>The 3 steps universal pipeline</Fragment>
+            </Para>
+            <Illustration Source="images/universal-pipeline.png">
+              <Meta>
+                <Width>25</Width>
+                <Alignment>center</Alignment>
+              </Meta>
+            </Illustration>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>Generate all pages with such pipelines</Fragment>
+            </Para>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>This opens door to simplification of pipeline generation through a Domain Specific Language (DSL)</Fragment>
+            </Para>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Oppidum framework</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>A unique XML file represents the application architecture</Fragment>
+            </Para>
+            <Illustration Source="images/oppidum-principles.png">
+              <Legend>
+                <Fragment>the mapping associates each REST resource from the application with a rendering pipeline</Fragment>
+              </Legend>
+              <Meta>
+                <Width>100</Width>
+              </Meta>
+            </Illustration>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Oppidum execution model</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>a two time engine</Fragment>
+            </Para>
+            <Illustration Source="images/oppidum-execution.png">
+              <Meta>
+                <Width>100</Width>
+              </Meta>
+            </Illustration>
+          </Item>
+          <Item>
+            <Para>
+              <Fragment>eXist-DB implementation</Fragment>
+            </Para>
+            <SubList>
+              <Item>
+                <Fragment>1st step : controller.xql calls gen:process( HTTP Request )</Fragment>
+              </Item>
+              <Item>
+                <Fragment>2nd step: URL Rewrite executes pipeline</Fragment>
+              </Item>
+            </SubList>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+    <Slide>
+      <Title>Sample Mapping</Title>
+      <Region>
+        <Meta>
+        </Meta>
+        <Block Numbering="bullet">
+          <Item>
+            <Para>
+              <Fragment>The POLL application</Fragment>
+            </Para>
+            <Code>
+              <Source>&lt;!-- ======================================================================
+                              Oppidoc POLL mapping
+     ====================================================================== --&gt;
+&lt;site db="/db/sites/poll" confbase="/db/www/poll" startref="about" supported="login logout" key="poll" mode="dev" languages="en" default="en"&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;!-- **      orders      ** --&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;collection name="orders" epilogue="home" method="POST"&gt;
+    &lt;access&gt;
+      &lt;rule action="GET" role="g:poll" message="poll manager"/&gt;
+      &lt;rule action="POST" role="all"/&gt;
+    &lt;/access&gt;
+    &lt;model src="modules/poll/admin.xql"/&gt;
+    &lt;view src="modules/poll/admin.xsl"/&gt;
+    &lt;action name="POST"&gt;
+      &lt;model src="modules/poll/orders.xql"/&gt;
+    &lt;/action&gt;
+  &lt;/collection&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;!-- **       forms      ** --&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;collection name="forms"&gt;
+    &lt;item epilogue="home"&gt;
+      &lt;model src="modules/poll/run.xql"/&gt;
+      &lt;view src="modules/poll/run.xsl"/&gt;
+    &lt;/item&gt;
+  &lt;/collection&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;!-- **     answers      ** --&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;collection name="answers"&gt;
+    &lt;item method="POST"&gt;
+      &lt;model src="modules/poll/read.xql"/&gt;
+      &lt;action name="POST"&gt;
+        &lt;model src="modules/poll/write.xql"/&gt;
+      &lt;/action&gt;
+    &lt;/item&gt;
+  &lt;/collection&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;!-- **  questionnaires  ** --&gt;
+  &lt;!-- ********************** --&gt;
+  &lt;collection name="questionnaires" method="POST"&gt;
+    &lt;action name="POST"&gt;
+      &lt;model src="modules/poll/questionnaires.xql"/&gt;
+    &lt;/action&gt;
+    &lt;!-- You MUST manually create one entry per Questionnaire --&gt;
+    &lt;!-- TODO: implement epilogue="$2.xhtml" in Oppidum --&gt;
+    &lt;item name="sample" epilogue="sample.xhtml"&gt;
+      &lt;model src="modules/poll/questionnaire.xql"/&gt;
+      &lt;view src="modules/poll/questionnaire.xsl"/&gt;
+    &lt;/item&gt;
+  &lt;/collection&gt;
+  &lt;!-- ****************** --&gt;
+  &lt;!-- **  guidelines  ** --&gt;
+  &lt;!-- ****************** --&gt;
+  &lt;item name="about" epilogue="home" resource="file:///views/about.xml"&gt;
+    &lt;access&gt;
+      &lt;rule action="GET" role="all"/&gt;
+    &lt;/access&gt;
+  &lt;/item&gt;
+  &lt;!-- **************** --&gt;
+  &lt;!-- **  loopback  ** --&gt;
+  &lt;!-- **************** --&gt;
+  &lt;item name="loopback" method="POST"&gt;
+    &lt;action name="POST"&gt;
+      &lt;model src="modules/poll/loopback.xql"/&gt;
+    &lt;/action&gt;
+  &lt;/item&gt;
+  &lt;!-- *************************************** --&gt;
+  &lt;!-- **              test                 ** --&gt;
+  &lt;!-- **  (REMOVE from production server)  ** --&gt;
+  &lt;!-- *************************************** --&gt;
+  &lt;item name="test"&gt;
+    &lt;item resource="file:///:self"/&gt;
+  &lt;/item&gt;
+&lt;/site&gt;</Source>
+              <Meta>
+                <Language>xml</Language>
+                <Size>12px</Size>
+              </Meta>
+            </Code>
+          </Item>
+        </Block>
+      </Region>
+    </Slide>
+  </Slides>
+</SlideShow>
