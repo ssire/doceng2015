@@ -33,6 +33,8 @@ How to read
 
 Starts with program.xhtml or read directly on Github page [program.xhtml](http://ssire.github.io/doceng2015/program.xhtml)
 
+You can also checkout and study the [poll application](http://www.github.com/ssire/poll) which is used as an illustration during this tutorial.
+
 Acknowledgments
 ---
 
